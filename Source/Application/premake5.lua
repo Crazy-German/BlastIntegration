@@ -2,9 +2,9 @@ include "../../Premake/extensions.lua"
 -- include for common stuff 
 include "../../Premake/common.lua"
 
-workspace "P7"
+workspace "BlastProject-Specialization"
 location "../../"
-startproject "FM_HPE_102.4"
+startproject "BlastDemo"
 architecture "x64"
 
 configurations {

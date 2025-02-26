@@ -2,7 +2,7 @@ include "../../../Premake/extensions.lua"
 -- include for common stuff 
 include "../../../Premake/common.lua"
 -------------------------------------------------------------
-project "FM_HPE_102.4"
+project "BlastDemo"
 location (dirs.projectfiles)
 dependson { "FeatherEngine", "MuninGraph", "MuninGraphEditor", "ImGuiNodeEditor", "ScriptGraphNodes"}
 
