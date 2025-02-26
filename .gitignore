@@ -12,6 +12,7 @@
 *.dll
 *.lib
 Local/
+Intermediate/
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
