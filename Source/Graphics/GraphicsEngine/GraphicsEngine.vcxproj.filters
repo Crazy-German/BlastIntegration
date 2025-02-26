@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="GraphicsEngine.pch.h" />
+    <ClInclude Include="RenderHardwareInterface.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RHIStructs.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineStateObject.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommandList.h" />
+    <ClInclude Include="GfxCmd_RenderMesh.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_Present.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_SetFrameBuffer.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_ChangePipelineState.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_SetAnimationBuffer.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="InterOp\DDSTextureLoader11.h">
+      <Filter>InterOP</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectBuffer.h">
+      <Filter>RHI\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationBuffer.h">
+      <Filter>RHI\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>RHI\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialBuffer.h">
+      <Filter>RHI\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="LightBuffer.h">
+      <Filter>RHI\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_SetLightBuffer.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_BeginEvent.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_EndEvent.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_SetMarker.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_DrawQuad.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxCmd_ClearBackBuffer.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GraphicsEngine.pch.cpp" />
+    <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="RenderHardwareInterface.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateObject.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommandList.cpp" />
+    <ClCompile Include="GfxCmd_RenderMesh.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_Present.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_SetFrameBuffer.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_ChangePipelineState.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_SetAnimationBuffer.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="InterOp\DDSTextureLoader11.cpp">
+      <Filter>InterOP</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_SetLightBuffer.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_BeginEvent.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_EndEvent.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_SetMarker.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_DrawQuad.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxCmd_ClearBackBuffer.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="RHI">
+      <UniqueIdentifier>{b9a968d7-f66b-4260-8e86-0db9200ed3b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{2ad4630a-970e-4275-9bdd-2c8a53027ca0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsCommands">
+      <UniqueIdentifier>{0a0787c6-ed0f-4778-afa2-8199752e6008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InterOP">
+      <UniqueIdentifier>{9093bd39-c0ea-4654-9583-9fbfa547c9e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Buffers">
+      <UniqueIdentifier>{214f778f-8793-467e-bcc7-17c4940c0920}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{17269CB7-03F3-F6C2-2C0C-E56A18382C51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX">
+      <UniqueIdentifier>{D86A6D73-444A-EC0E-4D62-77E5B9C05270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fonts">
+      <UniqueIdentifier>{CF74300D-3B89-58BE-040B-FC1D70DE54EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphEditor">
+      <UniqueIdentifier>{9E65B222-0A1B-2B18-930F-25EFFFC3211C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptGraphEditor">
+      <UniqueIdentifier>{13E5B6EE-7FFB-B484-C872-40A634C8850C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{A95C6780-9529-C28B-BE42-B033AA6EF719}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Commands\Command.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands\EdgeCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands\NodeCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DDSTextureLoader11.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\FontAwesomeRegular.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\FontAwesomeSolid.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\IconsFontAwesome6.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\RobotoBold.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\RobotoLightItalic.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\RobotoRegular.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphEditor\GraphEditorBase.h">
+      <Filter>GraphEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphEditor\GraphEditorUtils.h">
+      <Filter>GraphEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="MuninGraphEditor.h" />
+    <ClInclude Include="ScriptGraphEditor\ScriptGraphEditor.h">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptGraphEditor\ScriptGraphEditorTypeRegistry.h">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptGraphEditor\ScriptGraphEditorTypes.h">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\Texture_Event_Icon.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\Texture_Function_Icon.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\Texture_Hazard.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\Texture_NodeGradient.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\Texture_NodeHeader.h">
+      <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DirectX\DDSTextureLoader11.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphEditor\GraphEditorBase.cpp">
+      <Filter>GraphEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphEditor\GraphEditorUtils.cpp">
+      <Filter>GraphEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="MuninGraphEditor.cpp" />
+    <ClCompile Include="ScriptGraphEditor\ScriptGraphEditor.cpp">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptGraphEditor\ScriptGraphEditorTypeRegistry.cpp">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptGraphEditor\ScriptGraphEditorTypes.cpp">
+      <Filter>ScriptGraphEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+</Project>

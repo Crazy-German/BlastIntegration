@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Casts">
+      <UniqueIdentifier>{4393F20C-AFA7-1ABE-7829-BE1DE4FC16EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{3A8963B1-262B-8E87-0FE6-A1DBFB2615D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FlowControl">
+      <UniqueIdentifier>{FE203A9C-6AD6-B291-F3CA-AC685F7FA995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FlowControl\Expressions">
+      <UniqueIdentifier>{70866ED7-DCBD-B66E-E5C7-1A92517EDD67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{AFF4887C-9B2B-8A0D-4418-7010302E060F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{DCCA4FC7-C86C-7A9D-B127-8EF19D6801EE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Text">
+      <UniqueIdentifier>{EADC8C7C-D613-8E0D-7F00-74106B160A0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{667B2A0E-D28F-52BF-9B11-F61E07E54EF0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vector">
+      <UniqueIdentifier>{789BD6D7-643D-01AE-4DF8-1402393988FE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Casts\SGNode_CastBoolToString.h">
+      <Filter>Casts</Filter>
+    </ClInclude>
+    <ClInclude Include="Casts\SGNode_CastFloatToString.h">
+      <Filter>Casts</Filter>
+    </ClInclude>
+    <ClInclude Include="Casts\SGNode_CastVector3ToString.h">
+      <Filter>Casts</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_BeginPlay.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_CustomEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_InputEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_OnTimer.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_OnTouch.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_StopTimer.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_Tick.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_Timeline.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\SGNode_Timer.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\BranchNode.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\Expressions\SGNode_FloatExpressions.h">
+      <Filter>FlowControl\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\Expressions\SGNode_VectorExpression.h">
+      <Filter>FlowControl\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_AND.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_ForLoop.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_NAND.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_NOR.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_OR.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_Sequence.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_Switch.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_While.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowControl\SGNode_XOR.h">
+      <Filter>FlowControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_Lerp.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathAbs.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathAdd.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathAtan2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathCos.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathDiv.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathMax.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathMin.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathMul.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathSin.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\SGNode_MathSubb.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeIncludes.h" />
+    <ClInclude Include="Object\SGNode_GetActor.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\SGNode_Transform.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptGraphNodes.h" />
+    <ClInclude Include="ScriptGraphTypes.h" />
+    <ClInclude Include="Text\SGNode_FormatText.h">
+      <Filter>Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Text\SGNode_LogText.h">
+      <Filter>Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer\SGNode_GetTotalTime.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Add.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Break.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Cross.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Distance.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Dot.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Lengt.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Make.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Normalize.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3ScalarDiv.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3ScalarMul.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\SGNode_Vector3Sub.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Casts\SGNode_CastBoolToString.cpp">
+      <Filter>Casts</Filter>
+    </ClCompile>
+    <ClCompile Include="Casts\SGNode_CastFloatToString.cpp">
+      <Filter>Casts</Filter>
+    </ClCompile>
+    <ClCompile Include="Casts\SGNode_CastVector3ToString.cpp">
+      <Filter>Casts</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_BeginPlay.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_CustomEvent.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_InputEvent.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_OnTimer.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_OnTouch.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_StopTimer.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_Tick.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_Timeline.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\SGNode_Timer.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\BranchNode.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\Expressions\SGNode_FloatExpressions.cpp">
+      <Filter>FlowControl\Expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\Expressions\SGNode_VectorExpression.cpp">
+      <Filter>FlowControl\Expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_AND.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_ForLoop.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_NAND.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_NOR.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_OR.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_Sequence.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_Switch.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_While.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowControl\SGNode_XOR.cpp">
+      <Filter>FlowControl</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_Lerp.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathAbs.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathAdd.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathAtan2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathCos.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathDiv.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathMax.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathMin.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathMul.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathSin.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\SGNode_MathSubb.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\SGNode_GetActor.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\SGNode_Transform.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptGraphNodes.cpp" />
+    <ClCompile Include="ScriptGraphTypes.cpp" />
+    <ClCompile Include="Text\SGNode_FormatText.cpp">
+      <Filter>Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Text\SGNode_LogText.cpp">
+      <Filter>Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer\SGNode_GetTotalTime.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Add.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Break.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Cross.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Distance.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Dot.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Length.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Make.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Normalize.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3ScalarDiv.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3ScalarMul.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector\SGNode_Vector3Sub.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+</Project>

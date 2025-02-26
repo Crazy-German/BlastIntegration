@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Retail|x64">
+      <Configuration>Retail</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0522D5C9-F11A-F41B-1A4D-D9A006A5D327}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ScriptGraphNodes</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Retail|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Retail|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\Lib\Debug\</OutDir>
+    <IntDir>..\..\..\Intermediate\ScriptGraphNodes\Debug\</IntDir>
+    <TargetName>ScriptGraphNodes</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\Lib\Release\</OutDir>
+    <IntDir>..\..\..\Intermediate\ScriptGraphNodes\Release\</IntDir>
+    <TargetName>ScriptGraphNodes</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Retail|x64'">
+    <OutDir>..\..\..\Lib\Retail\</OutDir>
+    <IntDir>..\..\..\Intermediate\ScriptGraphNodes\Retail\</IntDir>
+    <TargetName>ScriptGraphNodes</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\External;.;..\MuninGraph;..\..\Utilities;..\..\Application\FeatherEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>_RELEASE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\External;.;..\MuninGraph;..\..\Utilities;..\..\Application\FeatherEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Retail|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>_RETAIL;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\External;.;..\MuninGraph;..\..\Utilities;..\..\Application\FeatherEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Casts\SGNode_CastBoolToString.h" />
+    <ClInclude Include="Casts\SGNode_CastFloatToString.h" />
+    <ClInclude Include="Casts\SGNode_CastVector3ToString.h" />
+    <ClInclude Include="Events\SGNode_BeginPlay.h" />
+    <ClInclude Include="Events\SGNode_CustomEvent.h" />
+    <ClInclude Include="Events\SGNode_InputEvent.h" />
+    <ClInclude Include="Events\SGNode_OnTimer.h" />
+    <ClInclude Include="Events\SGNode_OnTouch.h" />
+    <ClInclude Include="Events\SGNode_StopTimer.h" />
+    <ClInclude Include="Events\SGNode_Tick.h" />
+    <ClInclude Include="Events\SGNode_Timeline.h" />
+    <ClInclude Include="Events\SGNode_Timer.h" />
+    <ClInclude Include="FlowControl\BranchNode.h" />
+    <ClInclude Include="FlowControl\Expressions\SGNode_FloatExpressions.h" />
+    <ClInclude Include="FlowControl\Expressions\SGNode_VectorExpression.h" />
+    <ClInclude Include="FlowControl\SGNode_AND.h" />
+    <ClInclude Include="FlowControl\SGNode_ForLoop.h" />
+    <ClInclude Include="FlowControl\SGNode_NAND.h" />
+    <ClInclude Include="FlowControl\SGNode_NOR.h" />
+    <ClInclude Include="FlowControl\SGNode_OR.h" />
+    <ClInclude Include="FlowControl\SGNode_Sequence.h" />
+    <ClInclude Include="FlowControl\SGNode_Switch.h" />
+    <ClInclude Include="FlowControl\SGNode_While.h" />
+    <ClInclude Include="FlowControl\SGNode_XOR.h" />
+    <ClInclude Include="Math\SGNode_Lerp.h" />
+    <ClInclude Include="Math\SGNode_MathAbs.h" />
+    <ClInclude Include="Math\SGNode_MathAdd.h" />
+    <ClInclude Include="Math\SGNode_MathAtan2.h" />
+    <ClInclude Include="Math\SGNode_MathCos.h" />
+    <ClInclude Include="Math\SGNode_MathDiv.h" />
+    <ClInclude Include="Math\SGNode_MathMax.h" />
+    <ClInclude Include="Math\SGNode_MathMin.h" />
+    <ClInclude Include="Math\SGNode_MathMul.h" />
+    <ClInclude Include="Math\SGNode_MathSin.h" />
+    <ClInclude Include="Math\SGNode_MathSubb.h" />
+    <ClInclude Include="NodeIncludes.h" />
+    <ClInclude Include="Object\SGNode_GetActor.h" />
+    <ClInclude Include="Object\SGNode_Transform.h" />
+    <ClInclude Include="ScriptGraphNodes.h" />
+    <ClInclude Include="ScriptGraphTypes.h" />
+    <ClInclude Include="Text\SGNode_FormatText.h" />
+    <ClInclude Include="Text\SGNode_LogText.h" />
+    <ClInclude Include="Timer\SGNode_GetTotalTime.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Add.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Break.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Cross.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Distance.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Dot.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Lengt.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Make.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Normalize.h" />
+    <ClInclude Include="Vector\SGNode_Vector3ScalarDiv.h" />
+    <ClInclude Include="Vector\SGNode_Vector3ScalarMul.h" />
+    <ClInclude Include="Vector\SGNode_Vector3Sub.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Casts\SGNode_CastBoolToString.cpp" />
+    <ClCompile Include="Casts\SGNode_CastFloatToString.cpp" />
+    <ClCompile Include="Casts\SGNode_CastVector3ToString.cpp" />
+    <ClCompile Include="Events\SGNode_BeginPlay.cpp" />
+    <ClCompile Include="Events\SGNode_CustomEvent.cpp" />
+    <ClCompile Include="Events\SGNode_InputEvent.cpp" />
+    <ClCompile Include="Events\SGNode_OnTimer.cpp" />
+    <ClCompile Include="Events\SGNode_OnTouch.cpp" />
+    <ClCompile Include="Events\SGNode_StopTimer.cpp" />
+    <ClCompile Include="Events\SGNode_Tick.cpp" />
+    <ClCompile Include="Events\SGNode_Timeline.cpp" />
+    <ClCompile Include="Events\SGNode_Timer.cpp" />
+    <ClCompile Include="FlowControl\BranchNode.cpp" />
+    <ClCompile Include="FlowControl\Expressions\SGNode_FloatExpressions.cpp" />
+    <ClCompile Include="FlowControl\Expressions\SGNode_VectorExpression.cpp" />
+    <ClCompile Include="FlowControl\SGNode_AND.cpp" />
+    <ClCompile Include="FlowControl\SGNode_ForLoop.cpp" />
+    <ClCompile Include="FlowControl\SGNode_NAND.cpp" />
+    <ClCompile Include="FlowControl\SGNode_NOR.cpp" />
+    <ClCompile Include="FlowControl\SGNode_OR.cpp" />
+    <ClCompile Include="FlowControl\SGNode_Sequence.cpp" />
+    <ClCompile Include="FlowControl\SGNode_Switch.cpp" />
+    <ClCompile Include="FlowControl\SGNode_While.cpp" />
+    <ClCompile Include="FlowControl\SGNode_XOR.cpp" />
+    <ClCompile Include="Math\SGNode_Lerp.cpp" />
+    <ClCompile Include="Math\SGNode_MathAbs.cpp" />
+    <ClCompile Include="Math\SGNode_MathAdd.cpp" />
+    <ClCompile Include="Math\SGNode_MathAtan2.cpp" />
+    <ClCompile Include="Math\SGNode_MathCos.cpp" />
+    <ClCompile Include="Math\SGNode_MathDiv.cpp" />
+    <ClCompile Include="Math\SGNode_MathMax.cpp" />
+    <ClCompile Include="Math\SGNode_MathMin.cpp" />
+    <ClCompile Include="Math\SGNode_MathMul.cpp" />
+    <ClCompile Include="Math\SGNode_MathSin.cpp" />
+    <ClCompile Include="Math\SGNode_MathSubb.cpp" />
+    <ClCompile Include="Object\SGNode_GetActor.cpp" />
+    <ClCompile Include="Object\SGNode_Transform.cpp" />
+    <ClCompile Include="ScriptGraphNodes.cpp" />
+    <ClCompile Include="ScriptGraphTypes.cpp" />
+    <ClCompile Include="Text\SGNode_FormatText.cpp" />
+    <ClCompile Include="Text\SGNode_LogText.cpp" />
+    <ClCompile Include="Timer\SGNode_GetTotalTime.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Add.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Break.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Cross.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Distance.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Dot.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Length.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Make.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Normalize.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3ScalarDiv.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3ScalarMul.cpp" />
+    <ClCompile Include="Vector\SGNode_Vector3Sub.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
