@@ -32,7 +32,7 @@
 #define NVBLASTTYPES_H
 
 
-#include "NvPreprocessor.h"
+#include "shared/NvFoundation/NvPreprocessor.h"
 #include <float.h>
 #include <stdint.h>
 

@@ -40,7 +40,7 @@ namespace Squish
 		//Convex/Mesh you rich guy
 		bool Initialize(RigidBodyType aType, ShapeType aShape, TransformBase* aTransform, CommonUtilities::Vector3f aMaterial, std::vector<CommonUtilities::Vector3f>* aVertexlist, std::vector<uint32_t>* aIndexList,
 						uint32_t aVertexLimit, uint32_t aPolygonLimit, const TransformBase& aLocalTransform = TransformBase(), uint16_t aGroup = 0);
-
+		bool InitNoShape(RigidBodyType aType);
 		void AddShape(RigidBodyType aType, ShapeType aShape, const TransformBase& aTransform, CommonUtilities::Vector3f aMaterial, float aRadius);
 		void AddShape(RigidBodyType aType, ShapeType aShape, const TransformBase& aTransform, CommonUtilities::Vector3f aMaterial, CommonUtilities::Vector3f aHalfWidths);
 		void AddShape(RigidBodyType aType, ShapeType aShape, const TransformBase& aTransform, CommonUtilities::Vector3f aMaterial, float aRadius, float aHalfHeight);

@@ -286,8 +286,6 @@ bool RigidBody::Initialize(RigidBodyType aType, ShapeType aShape, TransformBase*
 		break;
 	case Dynamic:
 		myRigidBody = Physics.createRigidDynamic(Transform)->is<physx::PxRigidActor>();
-		//myRigidBody->is<PxRigidBody>()->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-		myRigidBody->is<PxRigidBody>()->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 		break;
 	default: ;
 	}
@@ -310,6 +308,28 @@ bool RigidBody::Initialize(RigidBodyType aType, ShapeType aShape, TransformBase*
 	myRigidBody->userData = &myUserData;
 	
 	return myRigidBody != nullptr;
+}
+
+bool RigidBody::InitNoShape(RigidBodyType aType = RigidBodyType::Dynamic)
+{
+	myUserData.aID = PhysXId++;
+	myUserData.myTransform = nullptr;
+	myType = aType;
+	
+	physx::PxPhysics& Physics = PxGetPhysics();
+	switch (myType)
+	{
+	case Static:
+		myRigidBody = Physics.createRigidStatic(PxTransform())->is<physx::PxRigidActor>();
+		break;
+	case Dynamic:
+		myRigidBody = Physics.createRigidDynamic(PxTransform())->is<physx::PxRigidActor>();
+		break;
+	default: ;
+	}
+
+	myRigidBody->userData = &myUserData;
+	return myRigidBody!=nullptr;
 }
 
 void RigidBody::AddShape(RigidBodyType aType, ShapeType aShape,

@@ -13,6 +13,7 @@
 #include "GameObjectSystem/Components/CharacterControllerComponent.h"
 #include "GameObjectSystem/Components/LevelSwapComponent.h"
 #include "MuninGraph/TimerManager.h"
+#include "Physcics/BlastAsset.h"
 
 using namespace Microsoft::WRL;
 
@@ -41,6 +42,7 @@ using namespace Microsoft::WRL;
 
 #include "KebabenekaiseFactory.h"
 #include "Components/FootStepsComponent.h"
+
 
 
 GameWorld::GameWorld()
@@ -139,6 +141,23 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 
 	ShowWindow(myMainWindowHandle, SW_SHOW);
 	SetForegroundWindow(myMainWindowHandle);
+	float halfSize = 50;
+	Mesh mesh;
+	mesh.GenerateCube(50);
+	std::vector<CommonUtilities::Vector3f> pos;
+	std::vector<CommonUtilities::Vector3f> norm;
+	std::vector<CommonUtilities::Vector2f> uv;
+	for(const auto& vertex : mesh.GetVertices())
+	{
+		pos.push_back(vertex.Position.ToVector3());
+		norm.push_back(vertex.Normal);
+		uv.push_back(vertex.UV);
+	}
+	BlastAsset asset;
+	asset.CreateAsset(pos, norm, uv, mesh.GetIndices(), 4);
+
+
+
 	return true;
 }
 

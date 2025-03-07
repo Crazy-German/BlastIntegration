@@ -17,7 +17,7 @@ objdir (dirs.intermidiate .. "%{prj.name}/%{cfg.buildcfg}")
 
 links ({"FeatherEngine", "MuninGraph", "MuninGraphEditor", "ImGuiNodeEditor", "ScriptGraphNodes"})--, "Imgui","GraphicsEngine", "External","CommonUtilities", "Logger", "External", "AudioEngine", "SquishPE"})
 print(dirs.game)
-includedirs {dirs.graphicsengine.."../", dirs.external, dirs.utilities, dirs.featherEngine, dirs.audioengine.."../", dirs.physicsengine, dirs.tool, dirs.tool.."../Imgui/Imgui/", dirs.physicsengine.."Physx/include", dirs.scripting}
+includedirs {dirs.graphicsengine.."../", dirs.external, dirs.utilities, dirs.featherEngine, dirs.audioengine.."../", dirs.physicsengine, dirs.tool, dirs.tool.."../Imgui/Imgui/", dirs.physicsengine.."Physx/include", dirs.scripting, dirs.physicsengine.."Physx/include/Shared/NvFoundation/"}
 
 	files {
 		"**.h",

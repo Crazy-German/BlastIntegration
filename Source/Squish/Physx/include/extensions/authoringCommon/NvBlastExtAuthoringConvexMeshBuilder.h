@@ -48,8 +48,9 @@ struct CollisionHull;
 class ConvexMeshBuilder
 {
 public:
-    
-    /**
+	virtual ~ConvexMeshBuilder() = default;
+
+	/**
     Release ConvexMeshBuilder memory
     */
     virtual void                    release() = 0;

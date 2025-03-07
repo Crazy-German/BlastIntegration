@@ -12,7 +12,9 @@ debugdir ("%{dirs.intermidiate}/%{prj.name}/")
 targetdir (dirs.lib.."/%{cfg.buildcfg}")
 targetname("%{prj.name}")
 
-includedirs ({dirs.utilities, dirs.physicsengine, dirs.physicsengine.."Colliders", dirs.physicsengine.."Physx", dirs.physicsengine.."Physics", dirs.physicsengine.."Physx/include"})
+includedirs ({dirs.utilities, dirs.physicsengine, dirs.physicsengine.."Colliders", dirs.physicsengine.."Physx", dirs.physicsengine.."Physics", dirs.physicsengine.."Physx/include", 
+	dirs.physicsengine.."Physx/include/shared/NvFoundation", dirs.physicsengine.."Physx/include/lowlevel", dirs.physicsengine.."Physx/include/globals", dirs.physicsengine.."Physx/include/extensions",
+	dirs.physicsengine.."Physx/include/extensions/authoringCommon", dirs.physicsengine.."Physx/include/extensions/authoring"})
 	group "Header"
 		files {
 			"**.h",
@@ -27,11 +29,13 @@ includedirs ({dirs.utilities, dirs.physicsengine, dirs.physicsengine.."Colliders
 			"*.rc"
 		}
 	group ""
-	libdirs ({dirs.lib, dirs.physicsengine.."Physx/lib/%{cfg.buildcfg}"})
+	libdirs ({dirs.lib, dirs.physicsengine.."Physx/lib/%{cfg.buildcfg}", dirs.physicsengine.."Physx/lib/%{cfg.buildcfg}/Blast"})
 	local files = os.matchfiles(dirs.physicsengine.."Physx/lib/Debug/*.lib");
     local libs = table.translate(files, path.getname)
 	links(libs)
-	
+	local files = os.matchfiles(dirs.physicsengine.."Physx/lib/Debug/Blast/*.lib");
+    local libs = table.translate(files, path.getname)
+	links(libs)
 	defines {"PX_PHYSX_STATIC_LIB"}
 
 	filter "configurations:Debug"

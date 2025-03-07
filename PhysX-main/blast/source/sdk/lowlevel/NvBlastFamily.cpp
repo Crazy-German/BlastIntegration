@@ -103,7 +103,7 @@ static NvBlastFamily* createFamily(void* mem, const NvBlastAssetMemSizeData& siz
         return nullptr;
     }
 
-    const uint32_t bondCount = sizeData.bondCount;
+    //const uint32_t bondCount = sizeData.bondCount;
 
     // We need to keep this many actor representations around for our island indexing scheme.
     const uint32_t lowerSupportChunkCount = sizeData.lowerSupportChunkCount;

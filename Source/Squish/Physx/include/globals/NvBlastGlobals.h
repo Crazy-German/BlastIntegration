@@ -29,10 +29,10 @@
 #define NVBLASTGLOBALS_H
 
 #include <new>
-#include "NvBlastTypes.h"
-#include "NvAllocatorCallback.h"
-#include "NvErrorCallback.h"
-#include "NvProfiler.h"
+#include "lowlevel/NvBlastTypes.h"
+#include "shared/NvFoundation/NvAllocatorCallback.h"
+#include "shared/NvFoundation/NvErrorCallback.h"
+#include "shared/NvFoundation/NvProfiler.h"
 
 
 //! @file
