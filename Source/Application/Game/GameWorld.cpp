@@ -153,8 +153,8 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 		norm.push_back(vertex.Normal);
 		uv.push_back(vertex.UV);
 	}
-	BlastAsset asset;
-	asset.CreateAsset(pos, norm, uv, mesh.GetIndices(), 4);
+	
+	myBlastAsset.CreateAsset(pos, norm, uv, mesh.GetIndices(), 4);
 
 
 
@@ -172,10 +172,10 @@ int GameWorld::Run()
 	ComponentSystem::Get()->Awake();
 	//std::filesystem::path level = "Assets/Exported Levels/l_assetgym/L_AssetGym_Level.json";
 	//std::filesystem::path level = "Assets\\Exported Levels\\l_level3\\L_Level3_Level.json";
-	std::filesystem::path level = "Assets/Exported Levels/l_playergym/L_PlayerGym_Level.json";
+	//std::filesystem::path level = "Assets/Exported Levels/l_playergym/L_PlayerGym_Level.json";
 	//std::filesystem::path level = "Assets/Exported Levels/l_assetgym/TestExportMap_Level.json"; 
 	//std::filesystem::path level = "Assets/Exported Levels/l_assetgym/L_AssetGym_Level.json";//TODO change file path to other gyms
-	MainSingleton::Get().GetSceneManager().LoadScene(level);
+	//MainSingleton::Get().GetSceneManager().LoadScene(level);
 	while (myIsRunning)
 	{
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -358,15 +358,16 @@ void GameWorld::UpdateScene(float aTimeDelta)
 	{
 		cappedDelta = 0.03333f;
 	}
-	MainSingleton::Get().GetSceneManager().UpdateScene(cappedDelta);
-	ComponentSystem::Get()->Update(cappedDelta);
-	MainSingleton::Get().GetAudioEngine().Update(aTimeDelta);
-	InterfaceManager::Get()->Update(cappedDelta);
+	Squish::Update(1);
+	//MainSingleton::Get().GetSceneManager().UpdateScene(cappedDelta);
+	//ComponentSystem::Get()->Update(cappedDelta);
+	//MainSingleton::Get().GetAudioEngine().Update(aTimeDelta);
+	//InterfaceManager::Get()->Update(cappedDelta);
 	//if (!InterfaceManager::Get()->IsInMenu())
 	{
 		//MainSingleton::Get().GetSceneManager().UpdateScene(cappedDelta);
 
-		CollisionManager::Get()->Update(cappedDelta);
+		//CollisionManager::Get()->Update(cappedDelta);
 	}
 }
 

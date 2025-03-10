@@ -57,6 +57,7 @@
 #include "Renderer.h"
 #include "CommonUtilities/Timer.h"
 #include "GameObjectSystem/Scenes/SceneManager.h"
+#include "Physcics/BlastAsset.h"
 
 #pragma endregion
 
@@ -112,4 +113,5 @@ private:
 	std::atomic<bool> myHasLoadedScene = false;
 	std::mutex myLoadLock;
 	std::condition_variable myLoadCondition;
+	BlastAsset myBlastAsset;
 };

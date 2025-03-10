@@ -427,7 +427,7 @@ void SceneManager::UpdateScene(float aDeltaTime)
 
 	if (myGloballyLoadedObjects.Player != nullptr)
 	{
-		myGloballyLoadedObjects.LightManager->Update(myGloballyLoadedObjects.Player->GetTransform()->GetPosition());
+		//myGloballyLoadedObjects.LightManager->Update(myGloballyLoadedObjects.Player->GetTransform()->GetPosition());
 	}
 	if (myGloballyLoadedObjects.Camera != nullptr)
 	{
@@ -469,7 +469,6 @@ void SceneManager::UpdateScene(float aDeltaTime)
 	{
 		myGloballyLoadedObjects.Camera->GetComponent<Transform>()->SetPosition(myGloballyLoadedObjects.Player->GetComponent<Transform>()->GetPosition());
 	}
-	Squish::Update(1 / 120.f);
 
 #ifndef _RETAIL
 	if (CU::Input::GetKeyHeld(CU::Keys::N0))

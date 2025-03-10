@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <vector>
 #include <toolkit/NvBlastTkActor.h>
 
@@ -7,6 +8,17 @@
 #include "CommonUtilities/Vector2.hpp"
 #include "CommonUtilities/Vector3.hpp"
 #include "shared/NvFoundation/NvCTypes.h"
+#include "toolkit/NvBlastTkEvent.h"
+
+namespace physx
+{
+	class PxFixedJoint;
+}
+
+namespace physx
+{
+	class PxRigidActor;
+}
 
 namespace Nv::Blast
 {
@@ -32,7 +44,7 @@ struct BlastMesh
     std::vector<uint32_t> indicies;
 };
 
-class BlastAsset
+class BlastAsset : public Nv::Blast::TkEventListener
 {
 public:
     BlastAsset();
@@ -44,13 +56,22 @@ public:
                      std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
 
     BlastMesh GetRenderData();
+	Nv::Blast::TkActor* GetActor();
+
+    void receive(const Nv::Blast::TkEvent* events, uint32_t eventCount) override;
 private:
     void FinalizeAuthoring(int32_t defaultSupportDepth = -1);
-    physx::PxConvexMeshGeometry CreateChunkShape();
+
+    void Split(const Nv::Blast::TkSplitEvent& aSplit);
+
     Nv::Blast::FractureTool* myFractureTool;
     Nv::Blast::AuthoringResult* myAuthoringResult;
-    Nv::Blast::TkAsset* myAsset;
+
+    const Nv::Blast::TkAsset* myAsset;
     Nv::Blast::TkActor* myActor;
+
+    std::unordered_map<uint32_t,physx::PxRigidActor*> myPhysXActors;
+	std::unordered_map<uint32_t, physx::PxFixedJoint*> myPhysxJoints;
 };
 
 void BlastLog(int type, const char* msg, const char* file, int line);

@@ -39,15 +39,8 @@ Squish::PhysicsEngine::PhysicsEngine()
 	myFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	gPvd = PxCreatePvd(*myFoundation);
 	
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	if(!transport)
-	{
-		printf("Failed to create transport\n");
-	}
-	if(gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL))
-	{
-		printf("Failed to connect to PVD\n");
-	}
+	
+	
 	myDispatcher = PxDefaultCpuDispatcherCreate(2);
 	myWorldScale = new PxTolerancesScale();
 }
@@ -88,6 +81,16 @@ void Squish::PhysicsEngine::Initialize(float aLength, float aSpeed, bool aCreate
 	myWorldScale->length = aLength;
 	myWorldScale->speed = aSpeed;
 	myPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *myFoundation, *myWorldScale,true, gPvd);
+	PxInitExtensions(*myPhysics, gPvd);
+	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	if(!transport)
+	{
+		printf("Failed to create transport\n");
+	}
+	if(gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL))
+	{
+		printf("Failed to connect to PVD\n");
+	}
 	if(aCreatemptyScene)
 	{
 		myScene = CreateScene();

@@ -33,6 +33,17 @@
 #include "geometry/PxGeometryInternal.h"
 #include "shaders/NvBlastExtDamageShaders.h"
 #include "NvCMath.h"
+#include "PhysXScene.h"
+#include "PxFixedJoint.h"
+#include "PxPhysics.h"
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 using namespace Nv::Blast;
 
@@ -43,6 +54,7 @@ BlastAsset::BlastAsset()
 
 BlastAsset::BlastAsset(const BlastAsset& aAsset)
 {
+    aAsset;
     /*uint32_t size = NvBlastAssetGetSize(aAsset.myAsset, BlastLog);
     myAsset = (NvBlastAsset*)malloc(size);
     memcpy(myAsset, aAsset.myAsset, size);*/
@@ -52,9 +64,7 @@ BlastAsset::BlastAsset(const BlastAsset& aAsset)
 BlastAsset::~BlastAsset()
 {
     myFractureTool->release();
-    myAsset->release();
     myActor->release();
-    free(myAsset);
 }
 
 void BlastAsset::Hit()
@@ -127,7 +137,11 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
     ConvexDecompositionParams convexDecompositionParams;
     //AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*myFractureTool, *bondGenerator, myConvexHullGenerator, convexDecompositionParams);
 	FinalizeAuthoring();
-  
+	myAsset = myActor->getAsset();
+
+
+
+
     return myActor!=nullptr;
 }
 
@@ -168,6 +182,53 @@ BlastMesh BlastAsset::GetRenderData()
     return retVal;
 }
 
+Nv::Blast::TkActor* BlastAsset::GetActor()
+{
+	return myActor;
+}
+
+void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
+{
+    const Nv::Blast::TkJointUpdateEvent* jointEvent;
+	const Nv::Blast::TkSplitEvent* split;
+
+	for(uint32_t i = 0; i<eventCount; i++)
+	{
+		const Nv::Blast::TkEvent& event = events[i];
+		switch (event.type)
+		{
+		case Nv::Blast::TkEvent::Split:
+			split = event.getPayload<Nv::Blast::TkSplitEvent>();
+			Split(*split);
+			break;
+		case Nv::Blast::TkEvent::FractureCommand:
+			
+			break;
+		case Nv::Blast::TkEvent::FractureEvent:
+			break;
+		case Nv::Blast::TkEvent::JointUpdate:
+                // Joint events have three subtypes, see which one we have
+				jointEvent = event.getPayload<Nv::Blast::TkJointUpdateEvent>();  // Joint update event payload
+                switch (jointEvent->subtype)
+                {
+                case Nv::Blast::TkJointUpdateEvent::External:
+                   // An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
+                    break;
+                case Nv::Blast::TkJointUpdateEvent::Changed:
+					
+                     // A joint's actors have changed, so we need to update its corresponding physics joint.
+                    break;
+                case Nv::Blast::TkJointUpdateEvent::Unreferenced:
+                   // This joint is no longer referenced, so we may delete the corresponding physics joint.
+                    break;
+                }
+			break;
+		case Nv::Blast::TkEvent::TypeCount:
+			break;
+		}
+	}
+}
+
 void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 {
     
@@ -197,6 +258,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     ConvexHullGenerator gen;
     BlastBondGenerator* bondGenerator =  NvBlastExtAuthoringCreateBondGenerator(&gen);
     ConvexDecompositionParams convexDecompositionParams;
+    convexDecompositionParams.voxelGridResolution = 10000;
     const uint32_t bondCount = bondGenerator->buildDescFromInternalFracture(myFractureTool, isSupport.get(), myAuthoringResult->bondDescs, myAuthoringResult->chunkDescs);
     aResult.bondCount = bondCount;
     if (bondCount == 0)
@@ -211,8 +273,10 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
         NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), aResult.chunkDescs, chunkCount, scratch.data(), logLL);
         NvBlastApplyAssetDescChunkReorderMapInPlace(aResult.chunkDescs, chunkCount, aResult.bondDescs, bondCount, chunkReorderMap.data(), true, scratch.data(), logLL);
         chunkReorderInvMap.resize(chunkReorderMap.size());
-    	chunkReorderInvMap.assign(chunkReorderMap.begin(), chunkReorderMap.end());
-        std::reverse(chunkReorderInvMap.begin(), chunkReorderInvMap.end());
+    	for(uint32_t i = 0; i<chunkReorderMap.size(); ++i)
+    	{
+    		chunkReorderInvMap[chunkReorderMap[i]] = i;
+    	}
     }
     //get Geometry
 
@@ -247,17 +311,18 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     {
         NvBlastBondDesc& bondDesc = aResult.bondDescs[i];
 
-        minX = std::min(minX, bondDesc.bond.centroid[0]);
-        maxX = std::max(maxX, bondDesc.bond.centroid[0]);
+        minX = min(minX, bondDesc.bond.centroid[0]);
+        maxX = max(maxX, bondDesc.bond.centroid[0]);
 
-        minY = std::min(minY, bondDesc.bond.centroid[1]);
-        maxY = std::max(maxY, bondDesc.bond.centroid[1]);
+        minY = min(minY, bondDesc.bond.centroid[1]);
+        maxY = max(maxY, bondDesc.bond.centroid[1]);
 
-        minZ = std::min(minZ, bondDesc.bond.centroid[2]);
-        maxZ = std::max(maxZ, bondDesc.bond.centroid[2]);
+        minZ = min(minZ, bondDesc.bond.centroid[2]);
+        maxZ = max(maxZ, bondDesc.bond.centroid[2]);
     }
-
-    BlastFrameWork::GetInstance().buildPhysxChunk(*myAuthoringResult, convexDecompositionParams);
+	
+	GeometryData** geometryData = new GeometryData*[chunkCount];
+    BlastFrameWork::GetInstance().buildPhysxChunk(*myAuthoringResult, convexDecompositionParams, geometryData);
 
     // set NvBlastChunk volume and centroid from CollisionHull
     for (uint32_t i = 0; i < chunkCount; i++)
@@ -313,18 +378,76 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
         aResult.materialCount = 0;
 		aResult.materialNames = nullptr;
     }
+    const uint32_t* map = NvBlastAssetGetChunkToGraphNodeMap(myAuthoringResult->asset, logLL);
+	for (uint32_t i = 0; i < chunkCount; i++)
+	{
+		uint32_t chunkId = map[i];
+		if (chunkId != 0xFFFFFFFF)
+		{
+			printf("Connectiion: %d", chunkId);	
+		}
+	}
+
 
     TkActorDesc desc;
     desc.uniformInitialBondHealth = 100;
     desc.uniformInitialLowerSupportChunkHealth = 100;
+    
     desc.asset = NvBlastTkFrameworkGet()->createAsset(myAuthoringResult->asset, nullptr, 0, true);
     bondGenerator->release();
     myActor = NvBlastTkFrameworkGet()->createActor(desc);
+	myActor->getFamily().addListener(*this);
+	myAsset = myActor->getAsset();
+    //Add base actor physx actor
+	const NvBlastChunk* chunks = myAsset->getChunks();
+    for(uint32_t i = 0; i<myAsset->getChunkCount(); i++)
+    {
+		myPhysXActors.emplace(i, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[i]->myGeometry, geometryData[i]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1)));
+		myPhysXActors.at(0)->setName((std::string("Chunk ")+std::to_string(i)).c_str());
+		Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(i));
+
+    }
+	/*myPhysXActors.emplace(2, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[1]->myGeometry, geometryData[1]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
+	myPhysXActors.emplace(3, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[2]->myGeometry, geometryData[2]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
+	myPhysXActors.emplace(4, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[3]->myGeometry, geometryData[3]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
+	myPhysXActors.emplace(5, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[4]->myGeometry, geometryData[4]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
+	*/
+	for (auto& actor : myPhysXActors)
+	{
+		if (actor.first == 0)
+		{
+			continue;
+		}
+        actor.second->setGlobalPose(physx::PxTransform(physx::PxVec3(0,200,0)));
+        printf("Pose: %fx,%fy,%fz\n", actor.second->getGlobalPose().p.x, actor.second->getGlobalPose().p.y, actor.second->getGlobalPose().p.z);
+		//Squish::PhysicsEngine::Get()->GetScene()->AddActor(actor.second);
+	}
+	//Add joints
+    const TkAssetJointDesc* bonds = myAsset->getJointDescs();
+	for(uint32_t i = 0; i< myAsset->getJointDescCount(); i++)
+	{
+        physx::PxVec3 pos0(bonds[i].attachPositions[0][0], bonds[i].attachPositions[0][1], bonds[i].attachPositions[0][2]);
+        physx::PxVec3 pos1(bonds[i].attachPositions[1][0], bonds[i].attachPositions[1][1], bonds[i].attachPositions[1][2]);
+        myPhysxJoints.emplace(i, physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), myPhysXActors.at(bonds[i].nodeIndices[0]), physx::PxTransform(pos0), myPhysXActors.at(bonds[i].nodeIndices[1]), physx::PxTransform(pos1)));
+	}
+	/*physx::PxVec3 pos0(myAsset->getChunks()[1].centroid[0], myAsset->getChunks()[1].centroid[1], myAsset->getChunks()[1].centroid[2]);
+	physx::PxVec3 pos1(myAsset->getChunks()[2].centroid[0], myAsset->getChunks()[1].centroid[2], myAsset->getChunks()[2].centroid[2]);
+    physx::PxVec3 dir0 = pos0.getNormalized();
+    physx::PxVec3 dir1 = pos1.getNormalized();
+    physx::PxQuat relative (std::acos(dir0.dot(dir1)), dir0.cross(dir1).getNormalized());
+    physx::PxFixedJoint* ajoint = physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), myPhysXActors.at(2),physx::PxTransform(pos0, relative), myPhysXActors.at(3),physx::PxTransform(pos1, relative));
+    ajoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);*/
+	//myPhysxJoints.emplace(0, ajoint);
+    
 }
 
-physx::PxConvexMeshGeometry BlastAsset::CreateChunkShape()
+void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
 {
-    return NULL;
+    Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(aSplit.parentData.index));
+	for (uint32_t i = 0; i < aSplit.numChildren; i++)
+	{
+		
+	}
 }
 
 

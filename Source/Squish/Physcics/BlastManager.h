@@ -2,31 +2,29 @@
 #include <unordered_map>
 
 #include "BlastAsset.h"
-#include "toolkit/NvBlastTkEvent.h"
 
 namespace physx
 {
+	class PxScene;
 	class PxRigidActor;
 	class PxFixedJoint;
 	class PxActor;
-}
-
-namespace physx
-{
 	class PxPhysics;
 }
+
 struct PhysxFamily
 {
 	std::unordered_map<uint32_t,physx::PxRigidActor*> myActors;
 };
-class BlastManager : public Nv::Blast::TkEventListener
+class BlastManager
 {
 public:
 	BlastManager();
 	void Init();
-	void CreateNewActor();
+	BlastAsset* CreateNewActor(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
+                     std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
 	void Update();
-	void receive(const Nv::Blast::TkEvent* events, uint32_t eventCount) override;
+	
 private:
 	void CreateActorInternal(Nv::Blast::TkActor* aActor);
 	void DeleteActorInternal(NvBlastID aFamily, uint32_t aIndex);
@@ -35,8 +33,9 @@ private:
 	void DeleteJoint(Nv::Blast::TkJoint* aJoint);
 	std::vector<BlastAsset> myAssets;
 	physx::PxPhysics* myPhysicsRef;
-	std::unordered_map<NvBlastID, PhysxFamily> myActors; //TKFamily id of TKActor, mapped to a physx family representing the different physx actors
-	std::unordered_map<uint32_t, physx::PxFixedJoint*> myJoints;
+	physx::PxScene* mySceneRef;
+	//std::unordered_map<NvBlastID, PhysxFamily> myActors; //TKFamily id of TKActor, mapped to a physx family representing the different physx actors
+	//std::unordered_map<uint32_t, physx::PxFixedJoint*> myJoints;
 	uint32_t jointIndex;
 };
 

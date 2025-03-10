@@ -66,7 +66,8 @@ PhysXScene::PhysXScene(physx::PxScene* aScene)
 {
 	myScene = aScene;
 	myScene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
-	
+	myScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
+	myScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
 
 	PxPvdSceneClient* pvdClient = myScene->getScenePvdClient();
 	if(pvdClient)
@@ -91,14 +92,14 @@ void PhysXScene::Update(float aDeltaTime)
 	myScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, actoramount);
 	for (PxU32 i=0; i < actoramount; ++i)
 	{
-		if(!actors[i]->userData)
+		/*if(!actors[i]->userData)
 		{
 			continue;
 		}
 		TransformBase* transform = static_cast<ActorUserData*>(actors[i]->userData)->myTransform;
 		PxVec3 pos = PxVec3(transform->GetPosition());
 		PxQuat quat = PxQuat(transform->GetRotationQuaternion().x, transform->GetRotationQuaternion().y, transform->GetRotationQuaternion().z, transform->GetRotationQuaternion().w);
-		actors[i]->is<PxRigidActor>()->setGlobalPose(PxTransform(pos, quat));
+		actors[i]->is<PxRigidActor>()->setGlobalPose(PxTransform(pos, quat));*/
 	}
 	delete[] actors;
 	
@@ -109,11 +110,11 @@ void PhysXScene::Update(float aDeltaTime)
 	PxActor** activeActors = myScene->getActiveActors(nbActiveActors);
 	for (PxU32 i=0; i < nbActiveActors; ++i)
 	{
-		ActorUserData* uData = static_cast<ActorUserData*>(activeActors[i]->userData);
+		/*ActorUserData* uData = static_cast<ActorUserData*>(activeActors[i]->userData);
 		TransformBase* transform = uData->myTransform;
 		PxVec3 pos = activeActors[i]->is<PxRigidActor>()->getGlobalPose().p;
 		PxQuat rot = activeActors[i]->is<PxRigidActor>()->getGlobalPose().q;
-		transform->SetPosition({pos.x, pos.y, pos.z});
+		transform->SetPosition({pos.x, pos.y, pos.z});*/
 		//transform->SetRotation({rot.x, rot.y, rot.z, rot.w});
 	}
 }
