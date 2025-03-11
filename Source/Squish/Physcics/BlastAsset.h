@@ -13,22 +13,14 @@
 namespace physx
 {
 	class PxFixedJoint;
-}
-
-namespace physx
-{
 	class PxRigidActor;
+	class PxConvexMeshGeometry;
 }
 
 namespace Nv::Blast
 {
 	struct AuthoringResult;
 	class FractureTool;
-}
-
-namespace physx
-{
-	class PxConvexMeshGeometry;
 }
 
 namespace Squish
@@ -69,7 +61,6 @@ private:
 
     const Nv::Blast::TkAsset* myAsset;
     Nv::Blast::TkActor* myActor;
-
     std::unordered_map<uint32_t,physx::PxRigidActor*> myPhysXActors;
 	std::unordered_map<uint32_t, physx::PxFixedJoint*> myPhysxJoints;
 };

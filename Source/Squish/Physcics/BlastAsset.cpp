@@ -13,14 +13,14 @@
 #include "toolkit/NvBlastTkAsset.h"
 #include "toolkit/NvBlastTkActor.h"
 #include "extensions/PxTriangleMeshExt.h"
-#include "extensions/authoring/NvBlastExtAuthoring.h"
-
 #include "extensions/PxConvexMeshExt.h"
 
 #include <vector>
 #include <extensions/assetutils/NvBlastExtAssetUtils.h>
 #include <lowlevel/NvBlastTypes.h>
 #include <shared/NvFoundation/NvCTypes.h>
+#include <extensions/stress/NvBlastExtStressSolver.h>
+
 
 
 #include "BlastFrameWork.h"
@@ -70,29 +70,40 @@ BlastAsset::~BlastAsset()
 void BlastAsset::Hit()
 {
     NvBlastExtRadialDamageDesc desc;
-    desc.damage = 100;
+    desc.damage = 10000;
     desc.position[0] = 0;
-    desc.position[1] = 5;
+    desc.position[1] = 0;
     desc.position[2] = 0;
     desc.minRadius = 0.1f;
-    desc.maxRadius = 10.f;
+    desc.maxRadius = 100.f;
     
-    NvBlastDamageProgram dmgProgram;
-    NvBlastExtProgramParams params(&desc);
+    NvBlastDamageProgram dmgProgram {
+        NvBlastExtFalloffGraphShader,
+        nullptr
+    };
+	
+    NvBlastExtProgramParams params(&desc, nullptr);
     //dmgProgram.graphShaderFunction = GraphShader(),
-    myActor->damage(dmgProgram, &params);
     TkGroupDesc group;
     group.workerCount = 1;
+    /*uint32_t nodeCount = myActor->getGraphNodeCount();
+    if(nodeCount>1)
+    {
+	    printf("More than one graph node, nr of nodes %d\n", nodeCount);
+    }*/
     auto actorgroup = NvBlastTkFrameworkGet()->createGroup(group);
     actorgroup->addActor(*myActor);
+	/*if (myActor->getGroup() == nullptr)
+	{
+		printf("Actor has no group\n");
+	}*/
+    myActor->damage(dmgProgram, &params);
     actorgroup->process();
-    actorgroup->release();
-    
+	actorgroup->release();
 }
 
-bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosData,
-                            const std::vector<CommonUtilities::Vector3f>& aNormData, const std::vector<CommonUtilities::Vector2f>& aUvData, const
-                             std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces)
+bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const std::vector<CommonUtilities::Vector2f>& aUvData, 
+							 const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces)
 {
     BlastMesh mesh;
     for(size_t i = 0; i<aPosData.size(); i++)
@@ -191,6 +202,7 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
 {
     const Nv::Blast::TkJointUpdateEvent* jointEvent;
 	const Nv::Blast::TkSplitEvent* split;
+	const Nv::Blast::TkFractureCommands* fractureCommands;
 
 	for(uint32_t i = 0; i<eventCount; i++)
 	{
@@ -202,9 +214,11 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
 			Split(*split);
 			break;
 		case Nv::Blast::TkEvent::FractureCommand:
-			
+			fractureCommands = event.getPayload<Nv::Blast::TkFractureCommands>();
+            Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(fractureCommands->tkActorData.index));
 			break;
 		case Nv::Blast::TkEvent::FractureEvent:
+			//event.getPayload<Nv::Blast::TkFractureEvents>().;
 			break;
 		case Nv::Blast::TkEvent::JointUpdate:
                 // Joint events have three subtypes, see which one we have
@@ -384,7 +398,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 		uint32_t chunkId = map[i];
 		if (chunkId != 0xFFFFFFFF)
 		{
-			printf("Connectiion: %d", chunkId);	
+			printf("Connectiion: %d to %d", i,chunkId);	
 		}
 	}
 
@@ -396,7 +410,9 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     desc.asset = NvBlastTkFrameworkGet()->createAsset(myAuthoringResult->asset, nullptr, 0, true);
     bondGenerator->release();
     myActor = NvBlastTkFrameworkGet()->createActor(desc);
+    
 	myActor->getFamily().addListener(*this);
+
 	myAsset = myActor->getAsset();
     //Add base actor physx actor
 	const NvBlastChunk* chunks = myAsset->getChunks();
@@ -405,7 +421,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 		myPhysXActors.emplace(i, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[i]->myGeometry, geometryData[i]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1)));
 		myPhysXActors.at(0)->setName((std::string("Chunk ")+std::to_string(i)).c_str());
 		Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(i));
-
+        printf("%d Sleeps at %f\n",i,myPhysXActors.at(i)->is<physx::PxRigidDynamic>()->getSleepThreshold());
     }
 	/*myPhysXActors.emplace(2, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[1]->myGeometry, geometryData[1]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
 	myPhysXActors.emplace(3, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[2]->myGeometry, geometryData[2]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
@@ -423,6 +439,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 		//Squish::PhysicsEngine::Get()->GetScene()->AddActor(actor.second);
 	}
 	//Add joints
+	
     const TkAssetJointDesc* bonds = myAsset->getJointDescs();
 	for(uint32_t i = 0; i< myAsset->getJointDescCount(); i++)
 	{
@@ -438,7 +455,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     physx::PxFixedJoint* ajoint = physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), myPhysXActors.at(2),physx::PxTransform(pos0, relative), myPhysXActors.at(3),physx::PxTransform(pos1, relative));
     ajoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);*/
 	//myPhysxJoints.emplace(0, ajoint);
-    
+	
 }
 
 void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)

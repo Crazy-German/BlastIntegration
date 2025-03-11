@@ -14,6 +14,8 @@
 #include "GameObjectSystem/Components/LevelSwapComponent.h"
 #include "MuninGraph/TimerManager.h"
 #include "Physcics/BlastAsset.h"
+#include "Physcics/BlastManager.h"
+#include "Physcics/PhysXScene.h"
 
 using namespace Microsoft::WRL;
 
@@ -153,8 +155,12 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 		norm.push_back(vertex.Normal);
 		uv.push_back(vertex.UV);
 	}
-	
-	myBlastAsset.CreateAsset(pos, norm, uv, mesh.GetIndices(), 4);
+	myPlane = new Squish::RigidBody();
+	myPlaneTransform.SetPosition({ -500, -200, -500 });
+	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 500, 100, 500 });
+	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPlane);
+
+	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv, mesh.GetIndices(), 4);
 
 
 
@@ -358,7 +364,8 @@ void GameWorld::UpdateScene(float aTimeDelta)
 	{
 		cappedDelta = 0.03333f;
 	}
-	Squish::Update(1);
+	Squish::Update(cappedDelta);
+	BlastManager::Get()->Update();
 	//MainSingleton::Get().GetSceneManager().UpdateScene(cappedDelta);
 	//ComponentSystem::Get()->Update(cappedDelta);
 	//MainSingleton::Get().GetAudioEngine().Update(aTimeDelta);

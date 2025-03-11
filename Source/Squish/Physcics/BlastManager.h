@@ -19,13 +19,14 @@ struct PhysxFamily
 class BlastManager
 {
 public:
-	BlastManager();
+	~BlastManager();
 	void Init();
-	BlastAsset* CreateNewActor(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
+	BlastAsset* CreateNewAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
                      std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
 	void Update();
-	
+	static BlastManager* Get();
 private:
+	BlastManager();
 	void CreateActorInternal(Nv::Blast::TkActor* aActor);
 	void DeleteActorInternal(NvBlastID aFamily, uint32_t aIndex);
 	void NewJoint(Nv::Blast::TkJoint* aJoint);
@@ -37,5 +38,5 @@ private:
 	//std::unordered_map<NvBlastID, PhysxFamily> myActors; //TKFamily id of TKActor, mapped to a physx family representing the different physx actors
 	//std::unordered_map<uint32_t, physx::PxFixedJoint*> myJoints;
 	uint32_t jointIndex;
+	Nv::Blast::TkGroup* myGroup;
 };
-

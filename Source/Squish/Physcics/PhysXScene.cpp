@@ -68,7 +68,8 @@ PhysXScene::PhysXScene(physx::PxScene* aScene)
 	myScene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	myScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
 	myScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
-
+	myTimeStep = 1.f/60.f;
+	myAccumulator = 0;
 	PxPvdSceneClient* pvdClient = myScene->getScenePvdClient();
 	if(pvdClient)
 	{
@@ -102,8 +103,13 @@ void PhysXScene::Update(float aDeltaTime)
 		actors[i]->is<PxRigidActor>()->setGlobalPose(PxTransform(pos, quat));*/
 	}
 	delete[] actors;
-	
-	myScene->simulate(aDeltaTime);
+	myAccumulator+=aDeltaTime;
+	if(myAccumulator<myTimeStep)
+	{
+		return;
+	}
+	myAccumulator-=myTimeStep;
+	myScene->simulate(myTimeStep);
 	myScene->fetchResults(true);
 
 	PxU32 nbActiveActors;
@@ -172,6 +178,11 @@ void PhysXScene::ClearScene()
 		myScene->removeActor(*actors[index]);
 		}
 	}
+}
+
+void PhysXScene::SetTimeStep(const float& aTimeStep)
+{
+	myTimeStep = aTimeStep;
 }
 
 bool PhysXScene::Raycast(const CommonUtilities::Vector3f& aOrigin, const CommonUtilities::Vector3f aDirection, float aMaxDistance, RayCastBuffer& aRayCastBuffer, const PxFilterData& aFilter, const PxQueryFlags aFlags) const

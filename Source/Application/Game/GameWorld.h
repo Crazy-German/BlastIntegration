@@ -113,5 +113,7 @@ private:
 	std::atomic<bool> myHasLoadedScene = false;
 	std::mutex myLoadLock;
 	std::condition_variable myLoadCondition;
-	BlastAsset myBlastAsset;
+	BlastAsset* myBlastAsset;
+	Squish::RigidBody* myPlane;
+	TransformBase myPlaneTransform;
 };

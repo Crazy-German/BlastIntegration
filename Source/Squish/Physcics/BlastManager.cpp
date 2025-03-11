@@ -1,5 +1,6 @@
 #include "BlastManager.h"
 
+#include "BlastFrameWork.h"
 #include "PhysicsEngine.h"
 #include "PhysXScene.h"
 #include "PxFixedJoint.h"
@@ -10,12 +11,22 @@
 #include "PxRigidDynamic.h"
 #include "toolkit/NvBlastTkAsset.h"
 #include "toolkit/NvBlastTkFamily.h"
+#include "toolkit/NvBlastTkFramework.h"
+#include "toolkit/NvBlastTkGroup.h"
 #include "toolkit/NvBlastTkJoint.h"
 
 BlastManager::BlastManager()
 {
 	myPhysicsRef = nullptr;
 	jointIndex = 0;
+	Nv::Blast::TkGroupDesc desc;
+	desc.workerCount = 1;
+	myGroup = BlastFrameWork::GetInstance().GetBlastFrameWork()->createGroup(desc);
+}
+
+BlastManager::~BlastManager()
+{
+	myGroup->release();
 }
 
 void BlastManager::Init()
@@ -23,13 +34,13 @@ void BlastManager::Init()
 	myPhysicsRef = Squish::PhysicsEngine::Get()->GetPhysics();
 }
 
-BlastAsset* BlastManager::CreateNewActor(const std::vector<CommonUtilities::Vector3f>& aPosData,
+BlastAsset* BlastManager::CreateNewAsset(const std::vector<CommonUtilities::Vector3f>& aPosData,
 	const std::vector<CommonUtilities::Vector3f>& aNormData, const std::vector<CommonUtilities::Vector2f>& aUvData,
 	const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces)
 {
-	BlastAsset newAsset;
-	newAsset.CreateAsset(aPosData, aNormData, aUvData, aIndicies, aNrOfPieces);
-	myAssets.push_back(newAsset);
+	myAssets.emplace_back();
+	myAssets.back().CreateAsset(aPosData, aNormData, aUvData, aIndicies, aNrOfPieces);
+	//myGroup->addActor(*myAssets.back().GetActor());
 	//CreateActorInternal(myAssets.back().GetActor());
 	return &myAssets.back();
 }
@@ -37,14 +48,28 @@ BlastAsset* BlastManager::CreateNewActor(const std::vector<CommonUtilities::Vect
 
 void BlastManager::Update()
 {
-	/*for(auto& [blastId, physxFamily] : myActors)
-	{
-		for(auto& [index, actor] : physxFamily.myActors)
-		{
-		}
-	}
-	*/	
 	
+	for(auto& asset : myAssets)
+	{
+		asset.Hit();
+	}
+	/*uint32_t jobCount = myGroup->startProcess();
+	Nv::Blast::TkGroupWorker* worker = myGroup->acquireWorker();
+    for(uint32_t i = 0; i<jobCount; i++)
+    {
+        worker->process(i);
+    }
+
+    myGroup->returnWorker(worker);
+    myGroup->endProcess();*/
+	/*myGroup->process();
+	myGroup->release();*/
+}
+
+BlastManager* BlastManager::Get()
+{
+	static BlastManager instance;
+	return &instance;
 }
 
 void BlastManager::CreateActorInternal(Nv::Blast::TkActor* aActor)

@@ -150,8 +150,8 @@ uint32_t BlastFrameWork::buildConvexMeshDecomposition(Nv::Blast::Triangle* aMesh
     VHACD::IVHACD::Parameters vhacdParam;
     vhacdParam.m_maxConvexHulls = iParams.maximumNumberOfHulls;
     vhacdParam.m_resolution = iParams.voxelGridResolution;
-	vhacdParam.m_minimumVolumePercentErrorAllowed = 1;
-    vhacdParam.m_maxRecursionDepth = 5;
+	vhacdParam.m_minimumVolumePercentErrorAllowed = iParams.concavity*1000;
+    vhacdParam.m_maxRecursionDepth = 3;
     //compute the hulls
     CommonUtilities::Timer::Get().Update();
     double time = CommonUtilities::Timer::Get().GetTotalTime();
@@ -302,6 +302,11 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 		actor->attachShape(*shape);
 	}
 	return actor;
+}
+
+Nv::Blast::TkFramework* BlastFrameWork::GetBlastFrameWork()
+{
+    return NvBlastTkFrameworkGet();
 }
 
 BlastFrameWork::BlastFrameWork()
