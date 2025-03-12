@@ -150,8 +150,8 @@ uint32_t BlastFrameWork::buildConvexMeshDecomposition(Nv::Blast::Triangle* aMesh
     VHACD::IVHACD::Parameters vhacdParam;
     vhacdParam.m_maxConvexHulls = iParams.maximumNumberOfHulls;
     vhacdParam.m_resolution = iParams.voxelGridResolution;
-	vhacdParam.m_minimumVolumePercentErrorAllowed = iParams.concavity*1000;
-    vhacdParam.m_maxRecursionDepth = 3;
+	vhacdParam.m_minimumVolumePercentErrorAllowed = iParams.concavity*100;
+    vhacdParam.m_maxRecursionDepth = 5;
     //compute the hulls
     CommonUtilities::Timer::Get().Update();
     double time = CommonUtilities::Timer::Get().GetTotalTime();
@@ -301,6 +301,29 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 		physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometry[i], *Physics->createMaterial(1, 1, 0));
 		actor->attachShape(*shape);
 	}
+    actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0000000001f);
+	return actor;
+}
+
+physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData** aGeometryData, uint32_t* aIndicies,
+                                                                  uint32_t aIndexCount, const NvcVec3& aPosition, const NvcQuat& aRotation)
+{
+physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
+	physx::PxRigidActor* actor = nullptr;
+    actor = Physics->createRigidDynamic(physx::PxTransform(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z), physx::PxQuat(aRotation.x, aRotation.y, aRotation.z, aRotation.w)))->is<physx::PxRigidActor>();
+    for(uint32_t dataIndex = 0; dataIndex<aIndexCount; dataIndex++)
+    {
+		for (uint32_t geometryIndex = 0; geometryIndex < aGeometryData[aIndicies[dataIndex]]->myGeometryCount; ++geometryIndex)
+		{
+			physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], *Physics->createMaterial(1, 1, 0));
+			actor->attachShape(*shape);
+		}
+	    
+    }
+    actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0000000001f);
+
 	return actor;
 }
 

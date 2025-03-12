@@ -10,8 +10,12 @@
 #include "shared/NvFoundation/NvCTypes.h"
 #include "toolkit/NvBlastTkEvent.h"
 
+class TransformBase;
+struct GeometryData;
+
 namespace physx
 {
+	class PxGeometry;
 	class PxFixedJoint;
 	class PxRigidActor;
 	class PxConvexMeshGeometry;
@@ -51,6 +55,7 @@ public:
 	Nv::Blast::TkActor* GetActor();
 
     void receive(const Nv::Blast::TkEvent* events, uint32_t eventCount) override;
+    void SetPosition(const CommonUtilities::Vector3f aPos);
 private:
     void FinalizeAuthoring(int32_t defaultSupportDepth = -1);
 
@@ -62,7 +67,9 @@ private:
     const Nv::Blast::TkAsset* myAsset;
     Nv::Blast::TkActor* myActor;
     std::unordered_map<uint32_t,physx::PxRigidActor*> myPhysXActors;
+    GeometryData** myGeometryData;
 	std::unordered_map<uint32_t, physx::PxFixedJoint*> myPhysxJoints;
+    TransformBase* myTransform;
 };
 
 void BlastLog(int type, const char* msg, const char* file, int line);

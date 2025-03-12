@@ -49,10 +49,10 @@ BlastAsset* BlastManager::CreateNewAsset(const std::vector<CommonUtilities::Vect
 void BlastManager::Update()
 {
 	
-	for(auto& asset : myAssets)
+	/*for(auto& asset : myAssets)
 	{
 		asset.Hit();
-	}
+	}*/
 	/*uint32_t jobCount = myGroup->startProcess();
 	Nv::Blast::TkGroupWorker* worker = myGroup->acquireWorker();
     for(uint32_t i = 0; i<jobCount; i++)

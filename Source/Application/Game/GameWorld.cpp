@@ -10,6 +10,7 @@
 #include "DearImGui/imgui_impl_win32.h"
 #include <GraphicsEngine/FrameBuffer.h>
 
+#include "AssetManagement/AssetTypes/MeshAsset.h"
 #include "GameObjectSystem/Components/CharacterControllerComponent.h"
 #include "GameObjectSystem/Components/LevelSwapComponent.h"
 #include "MuninGraph/TimerManager.h"
@@ -144,25 +145,26 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 	ShowWindow(myMainWindowHandle, SW_SHOW);
 	SetForegroundWindow(myMainWindowHandle);
 	float halfSize = 50;
+	//AssetManager::Get().GetAsset<MeshAsset>("SM_Container")->myMesh->GetVertices();
 	Mesh mesh;
 	mesh.GenerateCube(50);
 	std::vector<CommonUtilities::Vector3f> pos;
 	std::vector<CommonUtilities::Vector3f> norm;
 	std::vector<CommonUtilities::Vector2f> uv;
-	for(const auto& vertex : mesh.GetVertices())
+	for(const auto& vertex : AssetManager::Get().GetAsset<MeshAsset>("SM_FlatCart")->myMesh->GetVertices()/*mesh.GetVertices()*/)
 	{
 		pos.push_back(vertex.Position.ToVector3());
 		norm.push_back(vertex.Normal);
 		uv.push_back(vertex.UV);
 	}
 	myPlane = new Squish::RigidBody();
-	myPlaneTransform.SetPosition({ -500, -200, -500 });
-	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 500, 100, 500 });
+	myPlaneTransform.SetPosition({ -5000, -200, -5000 });
+	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 5000, 100, 5000 });
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPlane);
 
-	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv, mesh.GetIndices(), 4);
-
-
+	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  AssetManager::Get().GetAsset<MeshAsset>("SM_FlatCart")->myMesh->GetIndices(), 8);
+	myBlastAsset->SetPosition({0,200,0});
+	myBlastAsset->Hit();
 
 	return true;
 }
@@ -220,7 +222,7 @@ int GameWorld::Run()
 			myLockMouse = !myLockMouse;
 		}
 
-		if (GetActiveWindow() == myMainWindowHandle)
+		/*if (GetActiveWindow() == myMainWindowHandle)
 		{
 			if (InterfaceManager::Get()->GetLockMouse())
 			{
@@ -242,12 +244,11 @@ int GameWorld::Run()
 			}
 		}
 		else
-		{
+		{*/
 			MainSingleton::Get().SetMouseLock(false);
 			ShowCursor(true);
-		}
+		//}
 
-		CommonUtilities::Input::LockMouseToCenter(MainSingleton::Get().GetMouseLock(), myMainWindowHandle);
 
 #ifndef YIELD_IMPLEMENTATION
 		CheckLoadingDone(); //TODO: not great to do this every frame
@@ -302,40 +303,7 @@ int GameWorld::RunFromUnreal(const std::string& aLevel)
 			}
 		}
 
-#ifndef _RETAIL
-		if (CU::Input::GetKeyDown(CU::Keys::M))
-		{
-			myLockMouse = !myLockMouse;
-		}
-#endif
-		if (GetActiveWindow() == myMainWindowHandle)
-		{
-			if (InterfaceManager::Get()->GetLockMouse())
-			{
-				if (!myLockMouse)
-				{
-					MainSingleton::Get().SetMouseLock(false);
-					ShowCursor(true);
-				}
-				else
-				{
-					MainSingleton::Get().SetMouseLock(true);
-					SetCursor(NULL);
-				}
-			}
-			else
-			{
-				MainSingleton::Get().SetMouseLock(false);
-				ShowCursor(true);
-			}
-		}
-		else
-		{
-			MainSingleton::Get().SetMouseLock(false);
-			ShowCursor(true);
-		}
 
-		CommonUtilities::Input::LockMouseToCenter(MainSingleton::Get().GetMouseLock(), myMainWindowHandle);
 		myGui->Update(myTimer->GetDeltaTime());
 		MainSingleton::Get().GetRenderer().RenderFrame();
 		if (myGui)
@@ -435,8 +403,9 @@ void GameWorld::GameLoop()
 		}
 		CommonUtilities::Input::Update();
 
-		if (CU::Input::GetKeyHeld(CU::Keys::ESCAPE))
+		if (GetKeyState(static_cast<int>(CU::Keys::B)) & 0x8000)
 		{
+			myBlastAsset->Hit();
 			//InterfaceManager::Get()->StopSplashScreen();
 		}
 
@@ -513,7 +482,7 @@ void GameWorld::InitPlayer()
 	player->GetComponent<CharacterControllerComponent>()->Init(player->GetTransform(), 25, 50);
 
 	player->GetComponent<PlayerComponent>()->SetCamera(*MainSingleton::Get().GetSceneManager().GetGlobalObjects().Camera);
-	CollisionManager::Get()->AddRigidBody(player->GetComponent<CharacterControllerComponent>());
+	//CollisionManager::Get()->AddRigidBody(player->GetComponent<CharacterControllerComponent>());
 
 	//player->GetComponent<RigidBodyComponent>()->Initialize(Squish::RigidBodyType::Dynamic, Squish::ShapeType::Capsule, player->GetTransform(), { PX_MAX_F32*0.5, PX_MAX_F32*0.5, 0.0f }, 25.f,50.f);
 	//player->GetComponent<RigidBodyComponent>()->SetLinearDamping(0.05f);
