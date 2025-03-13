@@ -11,6 +11,7 @@
 #include <GraphicsEngine/FrameBuffer.h>
 
 #include "AssetManagement/AssetTypes/MeshAsset.h"
+#include "extensions/PxSimpleFactory.h"
 #include "GameObjectSystem/Components/CharacterControllerComponent.h"
 #include "GameObjectSystem/Components/LevelSwapComponent.h"
 #include "MuninGraph/TimerManager.h"
@@ -148,10 +149,12 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 	//AssetManager::Get().GetAsset<MeshAsset>("SM_Container")->myMesh->GetVertices();
 	Mesh mesh;
 	mesh.GenerateCube(50);
+	//mesh = *AssetManager::Get().GetAsset<MeshAsset>("SM_FlatCart")->myMesh;
 	std::vector<CommonUtilities::Vector3f> pos;
 	std::vector<CommonUtilities::Vector3f> norm;
 	std::vector<CommonUtilities::Vector2f> uv;
-	for(const auto& vertex : AssetManager::Get().GetAsset<MeshAsset>("SM_FlatCart")->myMesh->GetVertices()/*mesh.GetVertices()*/)
+	
+	for(const auto& vertex : mesh.GetVertices())
 	{
 		pos.push_back(vertex.Position.ToVector3());
 		norm.push_back(vertex.Normal);
@@ -159,10 +162,11 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 	}
 	myPlane = new Squish::RigidBody();
 	myPlaneTransform.SetPosition({ -5000, -200, -5000 });
+	
 	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 5000, 100, 5000 });
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPlane);
 
-	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  AssetManager::Get().GetAsset<MeshAsset>("SM_FlatCart")->myMesh->GetIndices(), 8);
+	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  mesh.GetIndices(), 4);
 	myBlastAsset->SetPosition({0,200,0});
 	myBlastAsset->Hit();
 

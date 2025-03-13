@@ -20,18 +20,20 @@ PxFilterFlags FilterShader(PxFilterObjectAttributes attr0, PxFilterData filter0,
 		return PxFilterFlag::eCALLBACK;
 	}
 	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-	if((filter0.word0 & filter1.word1) && (filter1.word0 & filter0.word1))
-        pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-        pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
-        pairFlags |= PxPairFlag::eNOTIFY_TOUCH_CCD;
-        pairFlags |= PxPairFlag::ePOST_SOLVER_VELOCITY;
-        pairFlags |= PxPairFlag::ePRE_SOLVER_VELOCITY;
-		pairFlags |= PxPairFlag::eCONTACT_EVENT_POSE;
-        pairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
+    pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+    pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
+    pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+    pairFlags |= PxPairFlag::eNOTIFY_TOUCH_CCD;
+    pairFlags |= PxPairFlag::ePOST_SOLVER_VELOCITY;
+    pairFlags |= PxPairFlag::ePRE_SOLVER_VELOCITY;
+	pairFlags |= PxPairFlag::eCONTACT_EVENT_POSE;
+    pairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	
 		
     return PxFilterFlag::eCALLBACK;
 }
+
+
 
 Squish::PhysicsEngine::PhysicsEngine()
 	:myScene(nullptr), myPhysics(nullptr), myWorldScale(nullptr)
@@ -57,7 +59,7 @@ void Squish::Update(const float& aDeltaTime)
 
 void Squish::SetCallback(physx::PxSimulationEventCallback* aContactHanlder)
 {
-	PhysicsEngine::Get()->GetScene()->AddCallback(aContactHanlder);
+	PhysicsEngine::Get()->GetScene()->SetCallback(aContactHanlder);
 }
 
 Squish::PhysicsEngine::~PhysicsEngine()
@@ -108,8 +110,8 @@ Squish::PhysXScene* Squish::PhysicsEngine::CreateScene(CommonUtilities::Vector3f
 	sceneDesc.ccdMaxPasses = 2;
 	PxVec3 maxExtent(PX_MAX_BOUNDS_EXTENTS,PX_MAX_BOUNDS_EXTENTS, PX_MAX_BOUNDS_EXTENTS);
 	sceneDesc.sanityBounds = PxBounds3(/*PxVec3(-10000,-10000,-10000)*/-maxExtent,  maxExtent/*(10000,10000,10000)*/);
-	sceneDesc.solverType = PxSolverType::eTGS;
-	sceneDesc.flags = PxSceneFlag::eENABLE_CCD|PxSceneFlag::eENABLE_BODY_ACCELERATIONS | PxSceneFlag::eENABLE_SOLVER_RESIDUAL_REPORTING |PxSceneFlag::eENABLE_EXTERNAL_FORCES_EVERY_ITERATION_TGS;// |PxSceneFlag::eENABLE_PCM;
+	sceneDesc.solverType = PxSolverType::ePGS;
+	sceneDesc.flags = PxSceneFlag::eENABLE_CCD|PxSceneFlag::eENABLE_BODY_ACCELERATIONS | PxSceneFlag::eENABLE_SOLVER_RESIDUAL_REPORTING/*|PxSceneFlag::eENABLE_EXTERNAL_FORCES_EVERY_ITERATION_TGS*/;// |PxSceneFlag::eENABLE_PCM;
 	PhysXScene* scene = new PhysXScene(myPhysics->createScene(sceneDesc));
 	return scene;
 }

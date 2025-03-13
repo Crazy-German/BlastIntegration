@@ -38,6 +38,12 @@ void CollisionManager::onContact(const physx::PxContactPairHeader& /*pairHeader*
         {
             const physx::PxContactPair& contactPair = pairs[i];
             PxActor* actor0 = contactPair.shapes[0]->getActor();
+            PxActor* actor1 = contactPair.shapes[1]->getActor();
+		if(actor0 == nullptr || actor1 == nullptr)
+		{
+			printf("Actor was nullptr\n");
+			return;
+		}
             //PxActor* actor1 = contactPair.shapes[1]->getActor();
             // Loop through all contacts within the pair
 		

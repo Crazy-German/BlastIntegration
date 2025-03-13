@@ -16,6 +16,8 @@
 #define ENABLE_VHACD_IMPLEMENTATION 
 #include "PhysicsEngine.h"
 #include "PxPhysics.h"
+#include "PxRigidActorExt.h"
+#include "PxRigidBodyExt.h"
 #include "PxRigidDynamic.h"
 #include "VHACD.h"
 #include "CommonUtilities/Timer.h"
@@ -302,7 +304,14 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 		actor->attachShape(*shape);
 	}
     actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
-    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0000000001f);
+    //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
+    //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.001f);
+    actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
+    actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
+    actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
+
+    actor->is<physx::PxRigidDynamic>()->setMass(10);
 	return actor;
 }
 
@@ -311,18 +320,33 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData**
 {
 physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
 	physx::PxRigidActor* actor = nullptr;
-    actor = Physics->createRigidDynamic(physx::PxTransform(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z), physx::PxQuat(aRotation.x, aRotation.y, aRotation.z, aRotation.w)))->is<physx::PxRigidActor>();
-    for(uint32_t dataIndex = 0; dataIndex<aIndexCount; dataIndex++)
+    physx::PxVec3 globlalPos = physx::PxVec3(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z));
+    actor = Physics->createRigidDynamic(physx::PxTransform(globlalPos, physx::PxQuat(aRotation.x, aRotation.y, aRotation.z, aRotation.w)))->is<physx::PxRigidActor>();
+	for(uint32_t dataIndex = 0; dataIndex<aIndexCount; dataIndex++)
     {
 		for (uint32_t geometryIndex = 0; geometryIndex < aGeometryData[aIndicies[dataIndex]]->myGeometryCount; ++geometryIndex)
 		{
 			physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], *Physics->createMaterial(1, 1, 0));
+            shape->setLocalPose(physx::PxTransform(-aGeometryData[aIndicies[dataIndex]]->myCenter));
+            //physx::PxMaterial* mat = Physics->createMaterial(1, 1, 0);
+			//physx::PxRigidActorExt::createExclusiveShape(*actor, *aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], &mat, 1);
 			actor->attachShape(*shape);
 		}
-	    
+        globlalPos+=aGeometryData[aIndicies[dataIndex]]->myCenter;
     }
+    actor->setGlobalPose(physx::PxTransform(globlalPos, actor->getGlobalPose().q));
+	//physx::PxReal density = 100;
+	//physx::PxRigidBodyExt::updateMassAndInertia(*actor->is<physx::PxRigidBody>(), density);
     actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
-    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.0000000001f);
+    //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
+    //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);s
+	/*physx::PxAggregate* agg = Squish::PhysicsEngine::Get()->GetPhysics()->createAggregate(1,128, 0);
+    physx::PxBVH*/
+    actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
+    actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
+    actor->is<physx::PxRigidDynamic>()->setMass(10);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.001f);
+    actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
 
 	return actor;
 }

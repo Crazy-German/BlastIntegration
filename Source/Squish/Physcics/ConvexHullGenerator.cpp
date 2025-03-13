@@ -103,7 +103,7 @@ Nv::Blast::CollisionHull* ConvexHullGenerator::buildCollisionGeometry(uint32_t v
 
 	physx::PxMeshScale Scale(physx::PxVec3(1,1,1));
 	aGeometry =  new physx::PxConvexMeshGeometry(mesh, Scale);//Set the geometry of the convex 
-
+	
 	Nv::Blast::CollisionHull* hull = new Nv::Blast::CollisionHull();
 
 	physx::PxU32 vertexCount = mesh->getNbVertices();

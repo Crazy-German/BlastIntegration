@@ -151,7 +151,7 @@ void PhysXScene::AddActor(RigidBody* aActor)
 	myScene->addActor(aActor->GetPhysxActor());
 }
 
-void PhysXScene::AddCallback(physx::PxSimulationEventCallback* aCallback)
+void PhysXScene::SetCallback(physx::PxSimulationEventCallback* aCallback)
 {
 	myScene->setSimulationEventCallback(aCallback);
 }

@@ -411,6 +411,10 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 
         aResult.materialCount = 0;
 		aResult.materialNames = nullptr;
+
+        myGeometryData[i]->myCenter.x = aResult.chunkDescs[i].centroid[0];
+        myGeometryData[i]->myCenter.y = aResult.chunkDescs[i].centroid[1];
+        myGeometryData[i]->myCenter.z = aResult.chunkDescs[i].centroid[2];
     }
     const uint32_t* map = NvBlastAssetGetChunkToGraphNodeMap(myAuthoringResult->asset, logLL);
 	for (uint32_t i = 0; i < chunkCount; i++)

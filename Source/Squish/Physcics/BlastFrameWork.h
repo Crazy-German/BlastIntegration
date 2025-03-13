@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NvCTypes.h"
+#include "foundation/PxVec3.h"
 
 namespace physx
 {
@@ -32,6 +33,7 @@ struct GeometryData
 {
 	physx::PxGeometry** myGeometry;
 	uint32_t myGeometryCount;
+	physx::PxVec3 myCenter;
 };
 
 class BlastFrameWork

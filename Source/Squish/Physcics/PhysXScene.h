@@ -29,7 +29,7 @@ namespace Squish
 		void AddActor(physx::PxBase* aActor);
 		void RemoveActor(physx::PxBase* aActor);
 		void AddActor(RigidBody* aActor);
-		void AddCallback(physx::PxSimulationEventCallback* aCallback);
+		void SetCallback(physx::PxSimulationEventCallback* aCallback);
 		void SetGravity(CU::Vector3f aGravity);
 		auto GetGravity() const -> CU::Vector3f;
 		void ClearScene();
