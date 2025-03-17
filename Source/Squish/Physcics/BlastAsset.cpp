@@ -76,7 +76,7 @@ BlastAsset::~BlastAsset()
 void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius)
 {
     physx::PxVec3 pos = aWorldPosition;//ToPhysXTransform(*myTransform).transformInv(aWorldPosition);
-    NvBlastExtImpactSpreadDamageDesc desc;
+    NvBlastExtRadialDamageDesc desc;
     desc.damage = aDamageVal;
     desc.position[0] = pos.x;
     desc.position[1] = pos.y;
@@ -491,8 +491,8 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
 {
     Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(aSplit.parentData.index));
-    myPhysXActors.erase(aSplit.parentData.index);
 	*myTransform = ToTransformbase(myPhysXActors.at(aSplit.parentData.index)->getGlobalPose());
+    myPhysXActors.erase(aSplit.parentData.index);
 	for (uint32_t i = 0; i < aSplit.numChildren; i++)
 	{
         uint32_t visableChunks = aSplit.children[i]->getVisibleChunkCount();

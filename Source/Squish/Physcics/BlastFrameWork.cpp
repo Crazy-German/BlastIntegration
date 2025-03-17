@@ -304,10 +304,10 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
         shape->userData = aShapeUserData;
 		actor->attachShape(*shape);
 	}
-    actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
+    actor->is<physx::PxRigidDynamic>()->setWakeCounter(1);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);
-    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.001f);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.01f);
     actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
     actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
     actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
@@ -339,7 +339,7 @@ physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
     actor->setGlobalPose(physx::PxTransform(globlalPos, actor->getGlobalPose().q));
 	//physx::PxReal density = 100;
 	//physx::PxRigidBodyExt::updateMassAndInertia(*actor->is<physx::PxRigidBody>(), density);
-    actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
+    actor->is<physx::PxRigidDynamic>()->setWakeCounter(1);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);s
 	/*physx::PxAggregate* agg = Squish::PhysicsEngine::Get()->GetPhysics()->createAggregate(1,128, 0);
@@ -347,7 +347,7 @@ physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
     actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
     actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
     actor->is<physx::PxRigidDynamic>()->setMass(10);
-    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.001f);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.01f);
     actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
 
 	return actor;

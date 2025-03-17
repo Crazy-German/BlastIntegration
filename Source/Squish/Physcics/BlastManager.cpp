@@ -115,9 +115,10 @@ void BlastManager::OnContact(const physx::PxContactPairHeader& pairHeader, const
             contactPair.extractContacts(point, contactPair.contactCount);
 			uint32_t* index1 = static_cast<uint32_t*>(contactPair.shapes[0]->userData);
 			uint32_t* index2 = static_cast<uint32_t*>(contactPair.shapes[1]->userData);
+			float dmg = (point->impulse/Squish::PhysicsEngine::Get()->GetScene()->GetTimeStep()).magnitude();
 			if(index1 != nullptr && *index1<myAssets.size())
 			{
-				myAssets.at(*index1).Hit(physx::PxVec3(0,0,0),(point->impulse/Squish::PhysicsEngine::Get()->GetScene()->GetTimeStep()).magnitude(), 0.1f, 100.f);
+				myAssets.at(*index1).Hit(physx::PxVec3(0,0,0),dmg*0.1f, 0.1f, dmg*0.01f);
 			}
         	if(index2 != nullptr && *index2<myAssets.size())
 			{
