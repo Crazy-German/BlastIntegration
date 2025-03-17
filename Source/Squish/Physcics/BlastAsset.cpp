@@ -46,6 +46,10 @@
 #endif
 
 using namespace Nv::Blast;
+using namespace physx;
+using namespace Squish;
+
+uint32_t GLOBALINDEX;
 
 BlastAsset::BlastAsset()
 {
@@ -69,21 +73,21 @@ BlastAsset::~BlastAsset()
     delete myTransform;
 }
 
-void BlastAsset::Hit()
+void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius)
 {
-    NvBlastExtRadialDamageDesc desc;
-    desc.damage = 10000;
-    desc.position[0] = 0;
-    desc.position[1] = 0;
-    desc.position[2] = 0;
-    desc.minRadius = 0.1f;
-    desc.maxRadius = 1000.f;
-    
+    physx::PxVec3 pos = aWorldPosition;//ToPhysXTransform(*myTransform).transformInv(aWorldPosition);
+    NvBlastExtImpactSpreadDamageDesc desc;
+    desc.damage = aDamageVal;
+    desc.position[0] = pos.x;
+    desc.position[1] = pos.y;
+    desc.position[2] = pos.z;
+    desc.minRadius = aMinRadius;
+    desc.maxRadius = aMaxRadius;
     NvBlastDamageProgram dmgProgram {
         NvBlastExtFalloffGraphShader,
+		
         nullptr
     };
-	
     NvBlastExtProgramParams params(&desc, nullptr);
     //dmgProgram.graphShaderFunction = GraphShader(),
     TkGroupDesc group;
@@ -115,13 +119,14 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
         mesh.uv.push_back({aUvData[i].x, aUvData[i].y});
     }
     MeshCleaner* cleaner = NvBlastExtAuthoringCreateMeshCleaner();
-    Mesh* aMesh = NvBlastExtAuthoringCreateMesh(mesh.pos.data(), mesh.norm.data(), mesh.uv.data(),aPosData.size(), aIndicies.data(), aIndicies.size());
+    Nv::Blast::Mesh* aMesh = NvBlastExtAuthoringCreateMesh(mesh.pos.data(), mesh.norm.data(), mesh.uv.data(),aPosData.size(), aIndicies.data(), aIndicies.size());
     
     aMesh = cleaner->cleanMesh(aMesh);
     myFractureTool = NvBlastExtAuthoringCreateFractureTool();
     myFractureTool->setSourceMeshes(&aMesh,1);
    
-    Mesh* donemesh = myFractureTool->createChunkMesh(0);
+    Nv::Blast::Mesh* donemesh = myFractureTool->createChunkMesh(0);
+    
     RandomGeneratorBase* rng = new PhysxRNG();
     auto voregen =  NvBlastExtAuthoringCreateVoronoiSitesGenerator(aMesh, rng);
     
@@ -129,9 +134,7 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
     //NvBlastExtAuthoringBuildMeshConvexDecomposition();
     voregen->uniformlyGenerateSitesInMesh(aNrOfPieces);
     voregen->getVoronoiSites(points);
-    /*
-    const NvcVec3* sitespoints;;
-    uint32_t sites =  voregen->getVoronoiSites(sitespoints);*/
+
     int32_t fractRes = myFractureTool->voronoiFracturing(0, aNrOfPieces, points, false);
     if(fractRes != 0)
     {
@@ -147,8 +150,6 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
 
     voregen->release();
     
-    ConvexDecompositionParams convexDecompositionParams;
-    //AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*myFractureTool, *bondGenerator, myConvexHullGenerator, convexDecompositionParams);
 	FinalizeAuthoring();
 	myAsset = myActor->getAsset();
 
@@ -217,7 +218,7 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
 			break;
 		case Nv::Blast::TkEvent::FractureCommand:
 			fractureCommands = event.getPayload<Nv::Blast::TkFractureCommands>();
-            Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(fractureCommands->tkActorData.index));
+            //Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(fractureCommands->tkActorData.index));
             for(uint32_t chunkIndex = 0; chunkIndex < fractureCommands->buffers.chunkFractureCount; chunkIndex++)
             {
 				uint32_t chunkAssetIndex = fractureCommands->buffers.chunkFractures[chunkIndex].chunkIndex;
@@ -438,7 +439,8 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 	myActor->getFamily().addListener(*this);
 
 	myAsset = myActor->getAsset();
-	myPhysXActors.emplace(myActor->getIndex(), BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData[0]->myGeometry, myGeometryData[0]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1)));
+    myIndex = GLOBALINDEX++;
+	myPhysXActors.emplace(myActor->getIndex(), BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData[0]->myGeometry, myGeometryData[0]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1), &myIndex));
 	//myPhysXActors.at(0)->setName((std::string("Chunk ")+std::to_string(0)).c_str());
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(myActor->getIndex()));
     myPhysXActors.at(myActor->getIndex())->setGlobalPose(Squish::ToPhysXTransform(*myTransform));
@@ -490,6 +492,7 @@ void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
 {
     Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(aSplit.parentData.index));
     myPhysXActors.erase(aSplit.parentData.index);
+	*myTransform = ToTransformbase(myPhysXActors.at(aSplit.parentData.index)->getGlobalPose());
 	for (uint32_t i = 0; i < aSplit.numChildren; i++)
 	{
         uint32_t visableChunks = aSplit.children[i]->getVisibleChunkCount();
@@ -497,7 +500,7 @@ void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
         TkActor* child = aSplit.children[i];
         uint32_t index = child->getIndex();
 		child->getVisibleChunkIndices(chunks, visableChunks);
-        myPhysXActors.emplace(index, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData, chunks, visableChunks,NvcVec3(myTransform->GetPosition().x,myTransform->GetPosition().y,myTransform->GetPosition().z), NvcQuat(myTransform->GetRotationQuaternion().x,myTransform->GetRotationQuaternion().y,myTransform->GetRotationQuaternion().z,myTransform->GetRotationQuaternion().w) ));
+        myPhysXActors.emplace(index, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData, chunks, visableChunks,NvcVec3(myTransform->GetPosition().x,myTransform->GetPosition().y,myTransform->GetPosition().z), NvcQuat(myTransform->GetRotationQuaternion().x,myTransform->GetRotationQuaternion().y,myTransform->GetRotationQuaternion().z,myTransform->GetRotationQuaternion().w), nullptr));
         Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(index));
         delete[] chunks;
 	}

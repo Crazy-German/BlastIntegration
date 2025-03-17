@@ -14,6 +14,7 @@
 #include "toolkit/NvBlastTkFramework.h"
 #include "toolkit/NvBlastTkGroup.h"
 #include "toolkit/NvBlastTkJoint.h"
+#include "PxSimulationEventCallback.h"
 
 BlastManager::BlastManager()
 {
@@ -92,6 +93,38 @@ void BlastManager::DeleteActorInternal(NvBlastID aFamily, uint32_t aIndex)
 	myActors.at(aFamily).myActors.at(aIndex)->release();
 	myActors.at(aFamily).myActors.erase(aIndex);*/
 	
+}
+
+void BlastManager::OnContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs,
+	uint32_t numPairs)
+{
+	for (uint32_t i = 0; i < numPairs; ++i)
+    {
+        const physx::PxContactPair& contactPair = pairs[i];
+       physx::PxActor* actor0 = contactPair.shapes[0]->getActor();
+        physx::PxActor* actor1 = contactPair.shapes[1]->getActor();
+	/*	if(actor0 == nullptr || actor1 == nullptr)
+		{
+			printf("Actor was nullptr\n");
+			return;
+		}*/
+	
+        for (uint32_t j = 0; j < contactPair.contactCount; ++j)
+        {
+	        physx::PxContactPairPoint* point = new physx::PxContactPairPoint[contactPair.contactCount];
+            contactPair.extractContacts(point, contactPair.contactCount);
+			uint32_t* index1 = static_cast<uint32_t*>(contactPair.shapes[0]->userData);
+			uint32_t* index2 = static_cast<uint32_t*>(contactPair.shapes[1]->userData);
+			if(index1 != nullptr && *index1<myAssets.size())
+			{
+				myAssets.at(*index1).Hit(physx::PxVec3(0,0,0),(point->impulse/Squish::PhysicsEngine::Get()->GetScene()->GetTimeStep()).magnitude(), 0.1f, 100.f);
+			}
+        	if(index2 != nullptr && *index2<myAssets.size())
+			{
+				myAssets.at(*index2).Hit(point->position,(point->impulse/Squish::PhysicsEngine::Get()->GetScene()->GetTimeStep()).magnitude(), 0.1f, 100.f);
+			}
+        }
+    }
 }
 
 void BlastManager::NewJoint(Nv::Blast::TkJoint* aJoint)

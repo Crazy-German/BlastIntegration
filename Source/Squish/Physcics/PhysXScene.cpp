@@ -70,6 +70,7 @@ PhysXScene::PhysXScene(physx::PxScene* aScene)
 	myScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
 	myTimeStep = 1.f/60.f;
 	myAccumulator = 0;
+	mySimulationIsRunning = false;
 	PxPvdSceneClient* pvdClient = myScene->getScenePvdClient();
 	if(pvdClient)
 	{
@@ -88,6 +89,21 @@ PhysXScene::~PhysXScene()
 
 void PhysXScene::Update(float aDeltaTime)
 {
+	for(size_t i = 0; myActorActionQueue.size(); i++)
+	{
+		switch (myActorActionQueue.front().myType)
+		{
+		case 1:
+			myScene->addActor(*myActorActionQueue.front().myActor);
+			break;
+		case 2:
+			myScene->removeActor(*myActorActionQueue.front().myActor);
+			break;
+		default:
+			break;
+		}
+		myActorActionQueue.pop();
+	}
 	PxU32 actoramount = myScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
 	PxActor** actors = new PxActor*[actoramount];
 	myScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, actoramount);
@@ -109,8 +125,10 @@ void PhysXScene::Update(float aDeltaTime)
 		return;
 	}
 	myAccumulator-=myTimeStep;
+	mySimulationIsRunning = true;
 	myScene->simulate(myTimeStep);
 	myScene->fetchResults(true);
+	mySimulationIsRunning = false;
 
 	PxU32 nbActiveActors;
 	PxActor** activeActors = myScene->getActiveActors(nbActiveActors);
@@ -129,6 +147,11 @@ void PhysXScene::AddActor(physx::PxBase* aActor)
 {
 	if(aActor->is<PxActor>())
 	{
+		if(mySimulationIsRunning)
+		{
+			myActorActionQueue.emplace(aActor->is<PxActor>(), 1);
+			return;
+		}
 		myScene->addActor(*aActor->is<PxActor>());
 	}
 }
@@ -137,6 +160,11 @@ void PhysXScene::RemoveActor(physx::PxBase* aActor)
 {
 	if(aActor != nullptr && aActor->is<PxActor>())
 	{
+		if(mySimulationIsRunning)
+		{
+			myActorActionQueue.emplace(aActor->is<PxActor>(), 2);
+			return;
+		}
 		myScene->removeActor(*aActor->is<PxActor>());
 	}
 }
@@ -146,6 +174,11 @@ void PhysXScene::AddActor(RigidBody* aActor)
 	if(!aActor->IsValid())
 	{
 		printf("Failed to ad actor to scene\n");
+		return;
+	}
+	if(mySimulationIsRunning)
+	{
+		myActorActionQueue.emplace(aActor->GetPhysxActor().is<PxActor>(), 1);
 		return;
 	}
 	myScene->addActor(aActor->GetPhysxActor());
@@ -175,7 +208,7 @@ void PhysXScene::ClearScene()
 	{
 		if(actors[index]->isReleasable())
 		{
-		myScene->removeActor(*actors[index]);
+			myScene->removeActor(*actors[index]);
 		}
 	}
 }
@@ -183,6 +216,11 @@ void PhysXScene::ClearScene()
 void PhysXScene::SetTimeStep(const float& aTimeStep)
 {
 	myTimeStep = aTimeStep;
+}
+
+float PhysXScene::GetTimeStep() const
+{
+	return myTimeStep;
 }
 
 bool PhysXScene::Raycast(const CommonUtilities::Vector3f& aOrigin, const CommonUtilities::Vector3f aDirection, float aMaxDistance, RayCastBuffer& aRayCastBuffer, const PxFilterData& aFilter, const PxQueryFlags aFlags) const

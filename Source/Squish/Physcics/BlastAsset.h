@@ -4,9 +4,10 @@
 #include <vector>
 #include <toolkit/NvBlastTkActor.h>
 
-#include "NvCTypes.h"
+#include "shared/NvFoundation/NvCTypes.h"
 #include "CommonUtilities/Vector2.hpp"
 #include "CommonUtilities/Vector3.hpp"
+#include "foundation/PxVec3.h"
 #include "shared/NvFoundation/NvCTypes.h"
 #include "toolkit/NvBlastTkEvent.h"
 
@@ -40,6 +41,8 @@ struct BlastMesh
     std::vector<uint32_t> indicies;
 };
 
+static uint32_t GetIndex();
+
 class BlastAsset : public Nv::Blast::TkEventListener
 {
 public:
@@ -47,7 +50,8 @@ public:
     BlastAsset(const BlastAsset& aAsset);
     ~BlastAsset();
 
-    void Hit();
+    void Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius);
+
     bool CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
                      std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
 
@@ -70,6 +74,7 @@ private:
     GeometryData** myGeometryData;
 	std::unordered_map<uint32_t, physx::PxFixedJoint*> myPhysxJoints;
     TransformBase* myTransform;
+    uint32_t myIndex;
 };
 
 void BlastLog(int type, const char* msg, const char* file, int line);

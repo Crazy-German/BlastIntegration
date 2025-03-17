@@ -5,6 +5,7 @@
 #include "Collision/EPA.h"
 #include "Collision/GJK.h"
 #include "GameObjectSystem/PostMaster/GameObjectPostMaster.h"
+#include "Physcics/BlastManager.h"
 #include "Physcics/PhysicsEngine.h"
 #include "Physcics/PhysXScene.h"
 
@@ -31,32 +32,33 @@ CollisionManager::~CollisionManager()
 {
 }
 
-void CollisionManager::onContact(const physx::PxContactPairHeader& /*pairHeader*/, const physx::PxContactPair* pairs,
+void CollisionManager::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs,
 	uint32_t numPairs)
 {
+	BlastManager::Get()->OnContact(pairHeader, pairs, numPairs);
 	for (uint32_t i = 0; i < numPairs; ++i)
-        {
-            const physx::PxContactPair& contactPair = pairs[i];
-            PxActor* actor0 = contactPair.shapes[0]->getActor();
-            PxActor* actor1 = contactPair.shapes[1]->getActor();
+    {
+        const physx::PxContactPair& contactPair = pairs[i];
+        PxActor* actor0 = contactPair.shapes[0]->getActor();
+        PxActor* actor1 = contactPair.shapes[1]->getActor();
 		if(actor0 == nullptr || actor1 == nullptr)
 		{
 			printf("Actor was nullptr\n");
 			return;
 		}
-            //PxActor* actor1 = contactPair.shapes[1]->getActor();
-            // Loop through all contacts within the pair
-		
-            for (uint32_t j = 0; j < contactPair.contactCount; ++j)
-            {
-				PxContactPairPoint* point = new PxContactPairPoint[contactPair.contactCount];
-                contactPair.extractContacts(point, contactPair.contactCount);
-				printf("Y-Normal: %.6f\n",point->normal.y);
-            }
-			InternalMSG msg;
-			msg.myEvent = InternalEvent::eHit;
-			myRigidBodies.at(static_cast<Squish::ActorUserData*>(actor0->userData)->aID)->GetGameObject()->SendInternal(msg);
+        //PxActor* actor1 = contactPair.shapes[1]->getActor();
+        // Loop through all contacts within the pair
+	
+        for (uint32_t j = 0; j < contactPair.contactCount; ++j)
+        {
+			PxContactPairPoint* point = new PxContactPairPoint[contactPair.contactCount];
+            contactPair.extractContacts(point, contactPair.contactCount);
+			printf("Y-Normal: %.6f\n",point->normal.y);
         }
+		InternalMSG msg;
+		msg.myEvent = InternalEvent::eHit;
+		myRigidBodies.at(static_cast<Squish::ActorUserData*>(actor0->userData)->aID)->GetGameObject()->SendInternal(msg);
+    }
 }
 
 void CollisionManager::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)

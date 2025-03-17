@@ -250,10 +250,10 @@ void SceneManager::LoadGlobalObjects()
 		myGloballyLoadedObjects.Camera->GetComponent<ControllerComponent>()->AddAction(ActionEventID::Rotation);
 		myGloballyLoadedObjects.Camera->SetShouldDebugRender(true);
 
-		myGloballyLoadedObjects.Camera->AddComponent(ComponentSystem::Get()->AddComponent<RigidBodyComponent, RIGID_BODY_COMPONENT>())->SetGameObject(myGloballyLoadedObjects.Camera);
+		/*myGloballyLoadedObjects.Camera->AddComponent(ComponentSystem::Get()->AddComponent<RigidBodyComponent, RIGID_BODY_COMPONENT>())->SetGameObject(myGloballyLoadedObjects.Camera);
 		myGloballyLoadedObjects.Camera->GetComponent<RigidBodyComponent>()->Initialize(Squish::Dynamic, Squish::Sphere, myGloballyLoadedObjects.Camera->GetTransform(), { 1, 1, 0 }, 3.f);
-		myGloballyLoadedObjects.Camera->GetComponent<RigidBodyComponent>()->SetKinematic(true);
-		CollisionManager::Get()->AddRigidBody(myGloballyLoadedObjects.Camera->GetComponent<RigidBodyComponent>());
+		myGloballyLoadedObjects.Camera->GetComponent<RigidBodyComponent>()->SetKinematic(true);*/
+		//CollisionManager::Get()->AddRigidBody(myGloballyLoadedObjects.Camera->GetComponent<RigidBodyComponent>());
 		//Camera should be parented to anim cam, and change prog cam
 		std::string jointName = "animCam";
 		jointName = "progCam";

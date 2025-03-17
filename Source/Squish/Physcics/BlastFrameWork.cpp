@@ -293,7 +293,7 @@ float BlastFrameWork::CalculateCollisionVolumeAndCentroid(NvcVec3& aCentriod, co
 }
 
 physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeometry** aGeometry, uint32_t aGeometryCount,
-	const NvcVec3& aPosition, const NvcQuat& aRotation)
+                                                                  const NvcVec3& aPosition, const NvcQuat& aRotation, void* aShapeUserData)
 {
     physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
 	physx::PxRigidActor* actor = nullptr;
@@ -301,6 +301,7 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 	for (uint32_t i = 0; i < aGeometryCount; ++i)
 	{
 		physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometry[i], *Physics->createMaterial(1, 1, 0));
+        shape->userData = aShapeUserData;
 		actor->attachShape(*shape);
 	}
     actor->is<physx::PxRigidDynamic>()->setWakeCounter(5);
@@ -316,7 +317,7 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 }
 
 physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData** aGeometryData, uint32_t* aIndicies,
-                                                                  uint32_t aIndexCount, const NvcVec3& aPosition, const NvcQuat& aRotation)
+                                                                  uint32_t aIndexCount, const NvcVec3& aPosition, const NvcQuat& aRotation, void* aShapeUserData)
 {
 physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
 	physx::PxRigidActor* actor = nullptr;
@@ -328,6 +329,7 @@ physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
 		{
 			physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], *Physics->createMaterial(1, 1, 0));
             shape->setLocalPose(physx::PxTransform(-aGeometryData[aIndicies[dataIndex]]->myCenter));
+            shape->userData = aShapeUserData;
             //physx::PxMaterial* mat = Physics->createMaterial(1, 1, 0);
 			//physx::PxRigidActorExt::createExclusiveShape(*actor, *aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], &mat, 1);
 			actor->attachShape(*shape);

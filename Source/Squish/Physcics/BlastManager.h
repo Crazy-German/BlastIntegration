@@ -5,6 +5,8 @@
 
 namespace physx
 {
+	struct PxContactPair;
+	struct PxContactPairHeader;
 	class PxScene;
 	class PxRigidActor;
 	class PxFixedJoint;
@@ -24,11 +26,14 @@ public:
 	BlastAsset* CreateNewAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
                      std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
 	void Update();
+	void OnContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, uint32_t numPairs);
 	static BlastManager* Get();
 private:
 	BlastManager();
 	void CreateActorInternal(Nv::Blast::TkActor* aActor);
 	void DeleteActorInternal(NvBlastID aFamily, uint32_t aIndex);
+
+
 	void NewJoint(Nv::Blast::TkJoint* aJoint);
 	void UpdateJoint(Nv::Blast::TkJoint* aJoint);
 	void DeleteJoint(Nv::Blast::TkJoint* aJoint);
