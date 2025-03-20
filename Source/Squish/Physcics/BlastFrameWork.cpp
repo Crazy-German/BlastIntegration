@@ -1,4 +1,7 @@
 #include "BlastFrameWork.h"
+//Convex mesh decomposition
+#define ENABLE_VHACD_IMPLEMENTATION 
+#include "VHACD.h"
 
 #include <set>
 
@@ -13,14 +16,39 @@
 #include "NvCMath.h"
 #include "shared/NvFoundation/Nv.h"
 #include "toolkit/NvBlastTkFramework.h"
-#define ENABLE_VHACD_IMPLEMENTATION 
 #include "PhysicsEngine.h"
+#include "PhysXScene.h"
+#include "PxFixedJoint.h"
 #include "PxPhysics.h"
 #include "PxRigidActorExt.h"
 #include "PxRigidBodyExt.h"
 #include "PxRigidDynamic.h"
-#include "VHACD.h"
 #include "CommonUtilities/Timer.h"
+
+nvidia::NvVec3 BlastFrameWork::ToNVVec3(const float* aVec3)
+{
+    return  nvidia::NvVec3(aVec3[0], aVec3[1], aVec3[2]);
+}
+
+NvcVec3 BlastFrameWork::ToNvcVec3(const float* aVec3)
+{
+    return NvcVec3(aVec3[0], aVec3[1], aVec3[2]);
+}
+
+physx::PxVec3 BlastFrameWork::toPxVec3(const float* aVec3)
+{
+    return physx::PxVec3(aVec3[0], aVec3[1], aVec3[2]);
+}
+
+physx::PxVec3 BlastFrameWork::toPxVec3(const nvidia::NvVec3& aVec3)
+{
+    return physx::PxVec3(aVec3.x, aVec3.y, aVec3.z);
+}
+
+physx::PxVec3 BlastFrameWork::toPxVec3(const NvcVec3& aVec3)
+{
+    return physx::PxVec3(aVec3.x, aVec3.y, aVec3.z);
+}
 
 BlastFrameWork& BlastFrameWork::GetInstance()
 {
@@ -319,38 +347,49 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
 physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData** aGeometryData, uint32_t* aIndicies,
                                                                   uint32_t aIndexCount, const NvcVec3& aPosition, const NvcQuat& aRotation, void* aShapeUserData)
 {
-physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
+	physx::PxPhysics* Physics =  Squish::PhysicsEngine::Get()->GetPhysics();
 	physx::PxRigidActor* actor = nullptr;
     physx::PxVec3 globlalPos = physx::PxVec3(physx::PxVec3(aPosition.x, aPosition.y, aPosition.z));
     actor = Physics->createRigidDynamic(physx::PxTransform(globlalPos, physx::PxQuat(aRotation.x, aRotation.y, aRotation.z, aRotation.w)))->is<physx::PxRigidActor>();
+    physx::PxVec3 avrglocal(0,0,0);
 	for(uint32_t dataIndex = 0; dataIndex<aIndexCount; dataIndex++)
     {
 		for (uint32_t geometryIndex = 0; geometryIndex < aGeometryData[aIndicies[dataIndex]]->myGeometryCount; ++geometryIndex)
 		{
 			physx::PxShape* shape = Squish::PhysicsEngine::Get()->GetPhysics()->createShape(*aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], *Physics->createMaterial(1, 1, 0));
-            shape->setLocalPose(physx::PxTransform(-aGeometryData[aIndicies[dataIndex]]->myCenter));
+            shape->setLocalPose(physx::PxTransform(aGeometryData[aIndicies[dataIndex]]->myCenter));
             shape->userData = aShapeUserData;
             //physx::PxMaterial* mat = Physics->createMaterial(1, 1, 0);
 			//physx::PxRigidActorExt::createExclusiveShape(*actor, *aGeometryData[aIndicies[dataIndex]]->myGeometry[geometryIndex], &mat, 1);
 			actor->attachShape(*shape);
+            avrglocal+=shape->getLocalPose().p;
 		}
-        globlalPos+=aGeometryData[aIndicies[dataIndex]]->myCenter;
+        globlalPos-=aGeometryData[aIndicies[dataIndex]]->myCenter;
     }
+    printf("Actor contains %d shapes\n", actor->getNbShapes());
     actor->setGlobalPose(physx::PxTransform(globlalPos, actor->getGlobalPose().q));
 	//physx::PxReal density = 100;
 	//physx::PxRigidBodyExt::updateMassAndInertia(*actor->is<physx::PxRigidBody>(), density);
     actor->is<physx::PxRigidDynamic>()->setWakeCounter(1);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);s
-	/*physx::PxAggregate* agg = Squish::PhysicsEngine::Get()->GetPhysics()->createAggregate(1,128, 0);
+	/*physx::PxAggregate* a+gg = Squish::PhysicsEngine::Get()->GetPhysics()->createAggregate(1,128, 0);
     physx::PxBVH*/
-    actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
-    actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
-    actor->is<physx::PxRigidDynamic>()->setMass(10);
-    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.01f);
+    actor->is<physx::PxRigidDynamic>()->setLinearDamping(10);
+    actor->is<physx::PxRigidDynamic>()->setAngularDamping(10);
+    actor->is<physx::PxRigidDynamic>()->setMass(100);
+    actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.1f);
     actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
 
 	return actor;
+}
+
+physx::PxJoint* BlastFrameWork::CreatePhysxJoint(const nvidia::NvVec3* aAttatchpos, physx::PxRigidActor* aActor0, physx::PxRigidActor* aActor1)
+{
+    physx::PxVec3 pxPos1 = toPxVec3(aAttatchpos[0]);
+    physx::PxVec3 pxPos2 = toPxVec3(aAttatchpos[1]);
+
+    return physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), aActor0, physx::PxTransform(pxPos1), aActor1, physx::PxTransform(pxPos2));
 }
 
 Nv::Blast::TkFramework* BlastFrameWork::GetBlastFrameWork()

@@ -1,7 +1,14 @@
 #pragma once
 
+#include "NvAllocatorCallback.h"
 #include "NvCTypes.h"
+#include "PxJoint.h"
 #include "foundation/PxVec3.h"
+
+namespace Nv::Blast
+{
+	class TkJoint;
+}
 
 namespace physx
 {
@@ -39,6 +46,7 @@ struct GeometryData
 class BlastFrameWork
 {
 public:
+	//Framework
 	static BlastFrameWork& GetInstance();
 	~BlastFrameWork();
 	void buildPhysxChunk(Nv::Blast::AuthoringResult& aResult, const Nv::Blast::ConvexDecompositionParams& iParams, GeometryData**& aOutGeometry,
@@ -54,7 +62,16 @@ public:
 	                                                  aShapeUserData);
 	physx::PxRigidActor* CreateRigidActorFromGeometry(GeometryData** aGeometryData, uint32_t* aIndicies, uint32_t aIndexCount, const NvcVec3& aPosition, const NvcQuat&
 	                                                  aRotation, void* aShapeUserData);
+	physx::PxJoint* CreatePhysxJoint(const nvidia::NvVec3* aAttatchpos, physx::PxRigidActor* aActor0, physx::PxRigidActor* aActor1);
+
 	Nv::Blast::TkFramework* GetBlastFrameWork();
+	//Util
+	static nvidia::NvVec3 ToNVVec3(const float* aVec3);
+	static NvcVec3 ToNvcVec3(const float* aVec3);
+
+	static physx::PxVec3 toPxVec3(const float* aVec3);
+	static physx::PxVec3 toPxVec3(const nvidia::NvVec3& aVec3);
+	static physx::PxVec3 toPxVec3(const NvcVec3& aVec3);
 private:
 	BlastFrameWork();
 	VHACD::IVHACD* myDecompoeser;

@@ -219,6 +219,10 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
 		case Nv::Blast::TkEvent::FractureCommand:
 			fractureCommands = event.getPayload<Nv::Blast::TkFractureCommands>();
             //Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(fractureCommands->tkActorData.index));
+           /* for(uint32_t bondFract = 0; bondFract < fractureCommands->buffers.bondFractureCount; bondFract++);
+			{
+				
+			}*/
             for(uint32_t chunkIndex = 0; chunkIndex < fractureCommands->buffers.chunkFractureCount; chunkIndex++)
             {
 				uint32_t chunkAssetIndex = fractureCommands->buffers.chunkFractures[chunkIndex].chunkIndex;
@@ -227,25 +231,72 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
             
 			break;
 		case Nv::Blast::TkEvent::FractureEvent:
-			//event.getPayload<Nv::Blast::TkFractureEvents>().;
+			//event.getPayload<Nv::Blast::TkFractureEvents>()->EVENT_TYPE;
 			break;
 		case Nv::Blast::TkEvent::JointUpdate:
-                // Joint events have three subtypes, see which one we have
+        {      // Joint events have three subtypes, see which one we have
 				jointEvent = event.getPayload<Nv::Blast::TkJointUpdateEvent>();  // Joint update event payload
                 switch (jointEvent->subtype)
                 {
-                case Nv::Blast::TkJointUpdateEvent::External:
-                   // An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
-                    break;
-                case Nv::Blast::TkJointUpdateEvent::Changed:
-					
-                     // A joint's actors have changed, so we need to update its corresponding physics joint.
-                    break;
-                case Nv::Blast::TkJointUpdateEvent::Unreferenced:
-                   // This joint is no longer referenced, so we may delete the corresponding physics joint.
-                    break;
-                }
+	                case Nv::Blast::TkJointUpdateEvent::External:
+					{ // An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
+	                    PxRigidActor* actor0 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[0]->userData);
+	                    PxRigidActor* actor1 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[1]->userData);
+                        jointEvent->joint->userData = BlastFrameWork::GetInstance().CreatePhysxJoint(jointEvent->joint->getData().attachPositions, actor0, actor1);
+	                    if(jointEvent->joint->userData == nullptr)
+	                    {
+		                    printf("Failed to create physx Joint\n");
+	                        __debugbreak();
+	                    }
+	                    break;
+	                }
+	                case Nv::Blast::TkJointUpdateEvent::Changed:
+	                {  // A joint's actors have changed, so we need to update its corresponding physics joint.
+	                    if(jointEvent->joint->userData != nullptr)
+	                    {
+		                    PxRigidActor* pxActors[2];
+	                        const TkJointData& data = jointEvent->joint->getData();
+	                        for(int j = 0; j<2;j++)
+	                        {
+		                        if(data.actors[j] != nullptr)
+		                        {
+			                        pxActors[j] = static_cast<PxRigidActor*>(data.actors[j]->userData);
+		                        }
+	                            else
+	                            {
+		                            pxActors[j] = nullptr;
+	                            }
+	                        }
+							PxFixedJoint* joint =  static_cast<PxFixedJoint*>(jointEvent->joint->userData);
+							joint->setActors(pxActors[0] != nullptr ? pxActors[0] : nullptr, pxActors[1] != nullptr ? pxActors[1] : nullptr);
+	                        
+	                    }
+	                    else // No physx joint existed create one
+	                    {
+		                    PxRigidActor* actor0 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[0]->userData);
+		                    PxRigidActor* actor1 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[1]->userData);
+
+		                    jointEvent->joint->userData = BlastFrameWork::GetInstance().CreatePhysxJoint(jointEvent->joint->getData().attachPositions, actor0, actor1);
+                            if(jointEvent->joint->userData == nullptr)
+		                    {
+			                    printf("Failed to create physx Joint\n");
+		                        __debugbreak();
+		                    }
+	                    }
+	                    break;
+	                }
+	                case Nv::Blast::TkJointUpdateEvent::Unreferenced:
+	                {   // This joint is no longer referenced, so we may delete the corresponding physics joint.
+	                    if(jointEvent->joint->userData != nullptr)
+	                    {
+		                    static_cast<PxFixedJoint*>(jointEvent->joint->userData)->release();
+	                        jointEvent->joint->userData = nullptr;
+	                    }
+	                    break;
+	                }
+				}
 			break;
+        }
 		case Nv::Blast::TkEvent::TypeCount:
 			break;
 		}
@@ -272,6 +323,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     }
     
     AuthoringResult& aResult = *myAuthoringResult;
+    TkAssetDesc AssetDesc;
     aResult.chunkCount = chunkCount;
 
     std::shared_ptr<bool> isSupport(new bool[chunkCount], [](bool* b) {delete[] b; });
@@ -294,7 +346,7 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
     convexDecompositionParams.voxelGridResolution = 10000;
     convexDecompositionParams.maximumNumberOfHulls = 8;
     convexDecompositionParams.maximumNumberOfVerticesPerHull = 128;
-    const uint32_t bondCount = bondGenerator->buildDescFromInternalFracture(myFractureTool, isSupport.get(), myAuthoringResult->bondDescs, myAuthoringResult->chunkDescs);
+    const uint32_t bondCount = bondGenerator->buildDescFromInternalFracture(myFractureTool, isSupport.get(), aResult.bondDescs, aResult.chunkDescs);
     aResult.bondCount = bondCount;
     if (bondCount == 0)
     {
@@ -405,7 +457,6 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
 		desc.bondCount = aResult.bondCount;
 		desc.chunkDescs = aResult.chunkDescs;
 		desc.chunkCount = aResult.chunkCount;
-
         std::vector<uint8_t> scratch(static_cast<unsigned int>(NvBlastGetRequiredScratchForCreateAsset(&desc, logLL)));
 		void* mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, logLL));
 		aResult.asset = NvBlastCreateAsset(mem, &desc,scratch.data(), logLL);
@@ -417,74 +468,46 @@ void BlastAsset::FinalizeAuthoring(int32_t defaultSupportDepth)
         myGeometryData[i]->myCenter.y = aResult.chunkDescs[i].centroid[1];
         myGeometryData[i]->myCenter.z = aResult.chunkDescs[i].centroid[2];
     }
-    const uint32_t* map = NvBlastAssetGetChunkToGraphNodeMap(myAuthoringResult->asset, logLL);
-	for (uint32_t i = 0; i < chunkCount; i++)
-	{
-		uint32_t chunkId = map[i];
-		if (chunkId != 0xFFFFFFFF)
-		{
-			printf("Connectiion: %d to %d", i,chunkId);	
-		}
-	}
-
 
     TkActorDesc desc;
     desc.uniformInitialBondHealth = 100;
     desc.uniformInitialLowerSupportChunkHealth = 100;
-    
-    desc.asset = NvBlastTkFrameworkGet()->createAsset(myAuthoringResult->asset, nullptr, 0, true);
+
+    uint8_t* flags = new uint8_t[myAuthoringResult->bondCount];
+    for(uint32_t i = 0; i<myAuthoringResult->bondCount; i++)
+    {
+       if(10.f <= aResult.bondDescs[i].bond.area)
+       {
+       		flags[i] |= TkAssetDesc::BondJointed;        
+			printf("Internal Joint %d and %d created, area %f\n", aResult.bondDescs[i].chunkIndices[0], aResult.bondDescs[i].chunkIndices[1], aResult.bondDescs->bond.area);
+       }
+       else
+       {
+			printf("Bond area to small: %f\n", aResult.bondDescs[i].bond.area);
+       }
+    }
+    AssetDesc.bondFlags = flags;
+    AssetDesc.bondDescs = aResult.bondDescs;
+    AssetDesc.bondCount = aResult.bondCount;
+    AssetDesc.chunkCount = aResult.chunkCount;
+    AssetDesc.chunkDescs = aResult.chunkDescs;
+
+    myAsset = NvBlastTkFrameworkGet()->createAsset(AssetDesc);
+    //desc.asset = NvBlastTkFrameworkGet()->createAsset(myAuthoringResult->asset, nullptr, 0,true);
+    desc.asset = myAsset;
     bondGenerator->release();
     myActor = NvBlastTkFrameworkGet()->createActor(desc);
-    
+   
 	myActor->getFamily().addListener(*this);
 
 	myAsset = myActor->getAsset();
     myIndex = GLOBALINDEX++;
 	myPhysXActors.emplace(myActor->getIndex(), BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData[0]->myGeometry, myGeometryData[0]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1), &myIndex));
+    myActor->userData = myPhysXActors.at(myActor->getIndex());
 	//myPhysXActors.at(0)->setName((std::string("Chunk ")+std::to_string(0)).c_str());
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(myActor->getIndex()));
     myPhysXActors.at(myActor->getIndex())->setGlobalPose(Squish::ToPhysXTransform(*myTransform));
-    //Add base actor physx actor
-	//const NvBlastChunk* chunks = myAsset->getChunks();
-   /* for(uint32_t i = 0; i<myAsset->getChunkCount(); i++)
-    {
-		myPhysXActors.emplace(i, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[i]->myGeometry, geometryData[i]->myGeometryCount, NvcVec3(0,0,0), NvcQuat(0,0,0,1)));
-		myPhysXActors.at(i)->setName((std::string("Chunk ")+std::to_string(i)).c_str());
-		Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(i));
-        printf("%d Sleeps at %f\n",i,myPhysXActors.at(i)->is<physx::PxRigidDynamic>()->getSleepThreshold());
-    }*/
-	/*myPhysXActors.emplace(2, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[1]->myGeometry, geometryData[1]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
-	myPhysXActors.emplace(3, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[2]->myGeometry, geometryData[2]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
-	myPhysXActors.emplace(4, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[3]->myGeometry, geometryData[3]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
-	myPhysXActors.emplace(5, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(geometryData[4]->myGeometry, geometryData[4]->myGeometryCount, NvcVec3(10,0,0), NvcQuat(0,0,0,1)));
-	*/
-	//for (auto& actor : myPhysXActors)
-	//{
-	//	if (actor.first == 0)
-	//	{
-	//		continue;
-	//	}
- //       actor.second->setGlobalPose(physx::PxTransform(physx::PxVec3(0,200,0)));
- //       printf("Pose: %fx,%fy,%fz\n", actor.second->getGlobalPose().p.x, actor.second->getGlobalPose().p.y, actor.second->getGlobalPose().p.z);
-	//	//Squish::PhysicsEngine::Get()->GetScene()->AddActor(actor.second);
-	//}
-	//Add joints
-	/*
-    const TkAssetJointDesc* bonds = myAsset->getJointDescs();
-	for(uint32_t i = 0; i< myAsset->getJointDescCount(); i++)
-	{
-        physx::PxVec3 pos0(bonds[i].attachPositions[0][0], bonds[i].attachPositions[0][1], bonds[i].attachPositions[0][2]);
-        physx::PxVec3 pos1(bonds[i].attachPositions[1][0], bonds[i].attachPositions[1][1], bonds[i].attachPositions[1][2]);
-        myPhysxJoints.emplace(i, physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), myPhysXActors.at(bonds[i].nodeIndices[0]), physx::PxTransform(pos0), myPhysXActors.at(bonds[i].nodeIndices[1]), physx::PxTransform(pos1)));
-	}*/
-	/*physx::PxVec3 pos0(myAsset->getChunks()[1].centroid[0], myAsset->getChunks()[1].centroid[1], myAsset->getChunks()[1].centroid[2]);
-	physx::PxVec3 pos1(myAsset->getChunks()[2].centroid[0], myAsset->getChunks()[1].centroid[2], myAsset->getChunks()[2].centroid[2]);
-    physx::PxVec3 dir0 = pos0.getNormalized();
-    physx::PxVec3 dir1 = pos1.getNormalized();
-    physx::PxQuat relative (std::acos(dir0.dot(dir1)), dir0.cross(dir1).getNormalized());
-    physx::PxFixedJoint* ajoint = physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), myPhysXActors.at(2),physx::PxTransform(pos0, relative), myPhysXActors.at(3),physx::PxTransform(pos1, relative));
-    ajoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);*/
-	//myPhysxJoints.emplace(0, ajoint);
+    
 	
 }
 
@@ -500,7 +523,12 @@ void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
         TkActor* child = aSplit.children[i];
         uint32_t index = child->getIndex();
 		child->getVisibleChunkIndices(chunks, visableChunks);
+        if(0<child->getJointCount())
+        {
+	        printf("joints %d\n", child->getJointCount());
+        }
         myPhysXActors.emplace(index, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData, chunks, visableChunks,NvcVec3(myTransform->GetPosition().x,myTransform->GetPosition().y,myTransform->GetPosition().z), NvcQuat(myTransform->GetRotationQuaternion().x,myTransform->GetRotationQuaternion().y,myTransform->GetRotationQuaternion().z,myTransform->GetRotationQuaternion().w), nullptr));
+        child->userData = myPhysXActors.at(index);
         Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(index));
         delete[] chunks;
 	}
