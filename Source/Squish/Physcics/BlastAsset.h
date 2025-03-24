@@ -49,8 +49,8 @@ public:
     BlastAsset();
     BlastAsset(const BlastAsset& aAsset);
     ~BlastAsset();
-
-    void Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius);
+    //Radial damage
+    void Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius, uint32_t aIndex, physx::PxVec3 aImpulse);
 
     bool CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const
                      std::vector<CommonUtilities::Vector2f>& aUvData, const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces = 4);
@@ -71,6 +71,8 @@ private:
     const Nv::Blast::TkAsset* myAsset;
     Nv::Blast::TkActor* myActor;
     std::unordered_map<uint32_t,physx::PxRigidActor*> myPhysXActors;
+    std::unordered_map<uint32_t,Nv::Blast::TkActor*> myBlastActors;
+    Nv::Blast::TkFamily* myFamily;
     GeometryData** myGeometryData;
 	std::unordered_map<uint32_t, physx::PxFixedJoint*> myPhysxJoints;
     TransformBase* myTransform;

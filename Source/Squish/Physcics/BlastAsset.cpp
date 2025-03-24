@@ -69,13 +69,25 @@ BlastAsset::BlastAsset(const BlastAsset& aAsset)
 BlastAsset::~BlastAsset()
 {
     myFractureTool->release();
-    myActor->release();
+    for(const auto& actor : myBlastActors)
+    {
+	    actor.second->release();
+    }
+    myBlastActors.clear();
     delete myTransform;
 }
 
-void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius)
+void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinRadius, float aMaxRadius, uint32_t aIndex, physx::PxVec3 aImpulse)
 {
-    physx::PxVec3 pos = aWorldPosition;//ToPhysXTransform(*myTransform).transformInv(aWorldPosition);
+    TkGroupDesc group;
+    group.workerCount = 1;
+    auto actorgroup = NvBlastTkFrameworkGet()->createGroup(group);
+
+    TkActor* actor = myBlastActors.at(aIndex);
+    PxRigidDynamic* pxActor = static_cast<PxRigidDynamic*>(actor->userData);
+    
+    PxTransform transform = pxActor->getGlobalPose();
+    physx::PxVec3 pos = transform.transformInv(aWorldPosition);//ToPhysXTransform(*myTransform).transformInv(aWorldPosition);
     NvBlastExtRadialDamageDesc desc;
     desc.damage = aDamageVal;
     desc.position[0] = pos.x;
@@ -88,22 +100,21 @@ void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinR
 		
         nullptr
     };
-    NvBlastExtProgramParams params(&desc, nullptr);
+    NvBlastExtProgramParams	params(&desc);
     //dmgProgram.graphShaderFunction = GraphShader(),
-    TkGroupDesc group;
-    group.workerCount = 1;
     /*uint32_t nodeCount = myActor->getGraphNodeCount();
     if(nodeCount>1)
     {
 	    printf("More than one graph node, nr of nodes %d\n", nodeCount);
     }*/
-    auto actorgroup = NvBlastTkFrameworkGet()->createGroup(group);
-    actorgroup->addActor(*myActor);
+    actorgroup->addActor(*actor);
 	/*if (myActor->getGroup() == nullptr)
 	{
 		printf("Actor has no group\n");
 	}*/
-    myActor->damage(dmgProgram, &params);
+    actor->damage(dmgProgram, &params);
+    
+
     actorgroup->process();
 	actorgroup->release();
 }
@@ -152,10 +163,7 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
     
 	FinalizeAuthoring();
 	myAsset = myActor->getAsset();
-
-
-
-
+    myBlastActors.emplace(myActor->getIndex(),myActor);
     return myActor!=nullptr;
 }
 
@@ -242,6 +250,7 @@ void BlastAsset::receive(const Nv::Blast::TkEvent* events, uint32_t eventCount)
 					{ // An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
 	                    PxRigidActor* actor0 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[0]->userData);
 	                    PxRigidActor* actor1 = static_cast<PxRigidActor*>(jointEvent->joint->getData().actors[1]->userData);
+	                        const TkJointData& data = jointEvent->joint->getData();
                         jointEvent->joint->userData = BlastFrameWork::GetInstance().CreatePhysxJoint(jointEvent->joint->getData().attachPositions, actor0, actor1);
 	                    if(jointEvent->joint->userData == nullptr)
 	                    {
@@ -515,7 +524,9 @@ void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
 {
     Squish::PhysicsEngine::Get()->GetScene()->RemoveActor(myPhysXActors.at(aSplit.parentData.index));
 	*myTransform = ToTransformbase(myPhysXActors.at(aSplit.parentData.index)->getGlobalPose());
+    PxRigidDynamic* temp = myPhysXActors.at(aSplit.parentData.index)->is<PxRigidDynamic>();
     myPhysXActors.erase(aSplit.parentData.index);
+    myBlastActors.erase(aSplit.parentData.index);
 	for (uint32_t i = 0; i < aSplit.numChildren; i++)
 	{
         uint32_t visableChunks = aSplit.children[i]->getVisibleChunkCount();
@@ -529,6 +540,8 @@ void BlastAsset::Split(const Nv::Blast::TkSplitEvent& aSplit)
         }
         myPhysXActors.emplace(index, BlastFrameWork::GetInstance().CreateRigidActorFromGeometry(myGeometryData, chunks, visableChunks,NvcVec3(myTransform->GetPosition().x,myTransform->GetPosition().y,myTransform->GetPosition().z), NvcQuat(myTransform->GetRotationQuaternion().x,myTransform->GetRotationQuaternion().y,myTransform->GetRotationQuaternion().z,myTransform->GetRotationQuaternion().w), nullptr));
         child->userData = myPhysXActors.at(index);
+		//myPhysXActors.at(index)->setGlobalPose(temp->getGlobalPose());
+        myBlastActors.emplace(index, child);
         Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPhysXActors.at(index));
         delete[] chunks;
 	}

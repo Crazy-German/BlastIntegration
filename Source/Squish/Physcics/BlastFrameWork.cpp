@@ -338,7 +338,7 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(physx::PxGeome
     actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.01f);
     actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
     actor->is<physx::PxRigidDynamic>()->setLinearDamping(1);
-    actor->is<physx::PxRigidDynamic>()->setAngularDamping(1);
+    actor->is<physx::PxRigidDynamic>()->setAngularDamping(10);
 
     actor->is<physx::PxRigidDynamic>()->setMass(10);
 	return actor;
@@ -375,8 +375,8 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData**
     //actor->is<physx::PxRigidDynamic>()->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);s
 	/*physx::PxAggregate* a+gg = Squish::PhysicsEngine::Get()->GetPhysics()->createAggregate(1,128, 0);
     physx::PxBVH*/
-    actor->is<physx::PxRigidDynamic>()->setLinearDamping(10);
-    actor->is<physx::PxRigidDynamic>()->setAngularDamping(10);
+    actor->is<physx::PxRigidDynamic>()->setLinearDamping(50);
+    actor->is<physx::PxRigidDynamic>()->setAngularDamping(50);
     actor->is<physx::PxRigidDynamic>()->setMass(100);
     actor->is<physx::PxRigidDynamic>()->setSleepThreshold(0.1f);
     actor->is<physx::PxRigidDynamic>()->setSolverIterationCounts(32,8);
@@ -386,10 +386,13 @@ physx::PxRigidActor* BlastFrameWork::CreateRigidActorFromGeometry(GeometryData**
 
 physx::PxJoint* BlastFrameWork::CreatePhysxJoint(const nvidia::NvVec3* aAttatchpos, physx::PxRigidActor* aActor0, physx::PxRigidActor* aActor1)
 {
+    physx::PxTransform trans1 = aActor0->getGlobalPose();
+    physx::PxTransform trans2 = aActor1->getGlobalPose();
     physx::PxVec3 pxPos1 = toPxVec3(aAttatchpos[0]);
     physx::PxVec3 pxPos2 = toPxVec3(aAttatchpos[1]);
-
-    return physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), aActor0, physx::PxTransform(pxPos1), aActor1, physx::PxTransform(pxPos2));
+    physx::PxJoint* ret = physx::PxFixedJointCreate(*Squish::PhysicsEngine::Get()->GetPhysics(), aActor0, physx::PxTransform(pxPos1), aActor1, physx::PxTransform(pxPos2));
+    ret->setBreakForce(100,100);
+    return ret;
 }
 
 Nv::Blast::TkFramework* BlastFrameWork::GetBlastFrameWork()

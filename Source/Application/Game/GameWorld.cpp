@@ -166,7 +166,7 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 5000, 100, 5000 });
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPlane);
 
-	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  mesh.GetIndices(), 4);
+	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  mesh.GetIndices(), 2);
 	myBlastAsset->SetPosition({0,500,0});
 	//myBlastAsset->Hit({}, 0, 0, 10);
 
@@ -409,7 +409,7 @@ void GameWorld::GameLoop()
 
 		if (GetKeyState(static_cast<int>(CU::Keys::B)) & 0x8000)
 		{
-			myBlastAsset->Hit({}, 0, 0, 10);
+			myBlastAsset->Hit({}, 0, 0, 10, 0, {0,50,0});
 			//InterfaceManager::Get()->StopSplashScreen();
 		}
 

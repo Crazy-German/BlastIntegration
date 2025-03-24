@@ -110,7 +110,7 @@ Squish::PhysXScene* Squish::PhysicsEngine::CreateScene(CommonUtilities::Vector3f
 	sceneDesc.ccdMaxPasses = 2;
 	PxVec3 maxExtent(PX_MAX_BOUNDS_EXTENTS,PX_MAX_BOUNDS_EXTENTS, PX_MAX_BOUNDS_EXTENTS);
 	sceneDesc.sanityBounds = PxBounds3(/*PxVec3(-10000,-10000,-10000)*/-maxExtent,  maxExtent/*(10000,10000,10000)*/);
-	sceneDesc.solverType = PxSolverType::ePGS;
+	sceneDesc.solverType = PxSolverType::eTGS;
 	sceneDesc.flags = PxSceneFlag::eENABLE_CCD|PxSceneFlag::eENABLE_BODY_ACCELERATIONS | PxSceneFlag::eENABLE_SOLVER_RESIDUAL_REPORTING/*|PxSceneFlag::eENABLE_EXTERNAL_FORCES_EVERY_ITERATION_TGS*/;// |PxSceneFlag::eENABLE_PCM;
 	PhysXScene* scene = new PhysXScene(myPhysics->createScene(sceneDesc));
 	return scene;
