@@ -26,6 +26,7 @@ public:
 	void Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&& aIndexList, std::vector<Element>&& aElementList, Skeleton&& aSkeleton, const std::string& aName);
 	void InitializeNoBuffer(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&& aIndexList,
 	                        std::vector<Element>&& aElementList, Skeleton&& aSkeleton, const std::string& aName);
+	void Initialize(const std::vector<CommonUtilities::Vector3f>& aPosVector, const std::vector<CommonUtilities::Vector3f>& aNormalVector, const std::vector<CommonUtilities::Vector2f>& aUvVector, const std::vector<uint32_t> aIndexVector);
 	void GenerateBuffers(const std::string& aName);
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer() const;
@@ -45,6 +46,7 @@ public:
 	void GenerateTube(const CU::Vector3f& startPos, const CU::Vector3f& endPos, const float radius, const int segments);
 	void GenerateCapsule(const float aRadius, float aHeight);
 	void GenerateHorizontalTriangle(float aSize);
+
 
 	CU::AABB3Df& GetBoundingBox();
 	void ResizeBoundingBox(CommonUtilities::Vector3f aSize);

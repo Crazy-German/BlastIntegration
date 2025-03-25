@@ -35,9 +35,9 @@ namespace Squish
 
 struct BlastMesh
 {
-    std::vector<NvcVec3> pos;
-    std::vector<NvcVec3> norm;
-    std::vector<NvcVec2> uv;
+    std::vector<CommonUtilities::Vector3f> pos;
+    std::vector<CommonUtilities::Vector3f> norm;
+    std::vector<CommonUtilities::Vector2f> uv;
     std::vector<uint32_t> indicies;
 };
 

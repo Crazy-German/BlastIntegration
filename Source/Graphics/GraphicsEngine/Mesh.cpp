@@ -31,6 +31,40 @@ void Mesh::InitializeNoBuffer(std::vector<Vertex>&& aVertexList, std::vector<uns
 	mySkeleton = std::move(aSkeleton);
 }
 
+void Mesh::Initialize(const std::vector<CommonUtilities::Vector3f>& aPosVector,
+	const std::vector<CommonUtilities::Vector3f>& aNormalVector,
+	const std::vector<CommonUtilities::Vector2f>& aUvVector, const std::vector<uint32_t> aIndexVector)
+{
+	if(aPosVector.size() != aNormalVector.size() || aPosVector.size() != aUvVector.size() || aNormalVector.size() != aUvVector.size())
+	{
+		printf("Vector sizes do not match vertices cannot be completed pos Vector: %llu, normal Vector: %llu, uv Vector: %llu\n", aPosVector.size(), aNormalVector.size(), aUvVector.size());
+		__debugbreak();
+	}
+	myVertices.resize(aPosVector.size());
+	myElements.clear();
+	for(size_t index = 0; index<myVertices.size(); index++)
+	{
+		myVertices[index].Position = aPosVector[index].ToVector4One();
+		myVertices[index].Normal = aNormalVector[index];
+		myVertices[index].UV = aUvVector[index];
+		myVertices[index].Color = {1,1,1,1};
+
+		// Calculate tangent
+		CommonUtilities::Vector3f up = {0.0f, 1.0f, 0.0f};
+		if (fabs(aNormalVector[index].y) > 0.999f) {
+			up = {1.0f, 0.0f, 0.0f};
+		}
+		myVertices[index].Tangent = aNormalVector[index].Cross(up).GetNormalized();
+	}
+	myIndices = std::move(aIndexVector);
+	myElements.push_back(Element(0,0,myVertices.size(), myIndices.size(), 0));
+
+	myPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	GraphicsEngine::Get().CreateVertexBuffer(" vertex buffer", myVertices, myVertexBuffer);
+	GraphicsEngine::Get().CreateIndexBuffer(" index buffer", myIndices, myIndexBuffer);
+}
+
 void Mesh::GenerateBuffers(const std::string& aName)
 {
 	myPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

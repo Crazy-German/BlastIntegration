@@ -166,8 +166,12 @@ bool GameWorld::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWi
 	myPlane->Initialize(Squish::RigidBodyType::Static, Squish::ShapeType::Box, &myPlaneTransform,{ 0,0,0 }, { 5000, 100, 5000 });
 	Squish::PhysicsEngine::Get()->GetScene()->AddActor(myPlane);
 
-	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  mesh.GetIndices(), 2);
+	myBlastAsset = BlastManager::Get()->CreateNewAsset(pos, norm, uv,  mesh.GetIndices(), 5);
 	myBlastAsset->SetPosition({0,500,0});
+	
+	auto blastRenderMesh = myBlastAsset->GetRenderData();
+	mesh.Initialize(blastRenderMesh.pos, blastRenderMesh.norm, blastRenderMesh.uv, blastRenderMesh.indicies);
+	MainSingleton::Get().GetSceneManager().GetGlobalObjects().Player->GetComponent<MeshComponent>()->SetMesh(std::make_shared<Mesh>(mesh));
 	//myBlastAsset->Hit({}, 0, 0, 10);
 
 	return true;
@@ -352,6 +356,10 @@ void GameWorld::UpdateScene(float aTimeDelta)
 
 void GameWorld::RenderScene()
 {
+	Mesh mesh;
+	auto blastRenderMesh = myBlastAsset->GetRenderData();
+	mesh.Initialize(blastRenderMesh.pos, blastRenderMesh.norm, blastRenderMesh.uv, blastRenderMesh.indicies);
+	MainSingleton::Get().GetSceneManager().GetGlobalObjects().Player->GetComponent<MeshComponent>()->SetMesh(std::make_shared<Mesh>(mesh));
 	MainSingleton::Get().GetSceneManager().RenderScene();
 
 }

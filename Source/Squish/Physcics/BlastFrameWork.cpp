@@ -50,6 +50,11 @@ physx::PxVec3 BlastFrameWork::toPxVec3(const NvcVec3& aVec3)
     return physx::PxVec3(aVec3.x, aVec3.y, aVec3.z);
 }
 
+CommonUtilities::Vector3<float> BlastFrameWork::toVector3(const NvcVec3& aVec3)
+{
+    return CommonUtilities::Vector3f(aVec3.x, aVec3.y, aVec3.z);
+}
+
 BlastFrameWork& BlastFrameWork::GetInstance()
 {
 	static BlastFrameWork instance;

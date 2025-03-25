@@ -122,15 +122,17 @@ void BlastAsset::Hit(physx::PxVec3 aWorldPosition, float aDamageVal, float aMinR
 bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosData, const std::vector<CommonUtilities::Vector3f>& aNormData, const std::vector<CommonUtilities::Vector2f>& aUvData, 
 							 const std::vector<uint32_t>& aIndicies, unsigned aNrOfPieces)
 {
-    BlastMesh mesh;
+    std::vector<NvcVec3> pos;
+    std::vector<NvcVec3> norm;
+    std::vector<NvcVec2> uv;
     for(size_t i = 0; i<aPosData.size(); i++)
     {
-        mesh.pos.push_back({aPosData[i].x, aPosData[i].y, aPosData[i].z});
-        mesh.norm.push_back({aNormData[i].x, aNormData[i].y, aNormData[i].z});
-        mesh.uv.push_back({aUvData[i].x, aUvData[i].y});
+        pos.push_back({aPosData[i].x, aPosData[i].y, aPosData[i].z});
+        norm.push_back({aNormData[i].x, aNormData[i].y, aNormData[i].z});
+        uv.push_back({aUvData[i].x, aUvData[i].y});
     }
     MeshCleaner* cleaner = NvBlastExtAuthoringCreateMeshCleaner();
-    Nv::Blast::Mesh* aMesh = NvBlastExtAuthoringCreateMesh(mesh.pos.data(), mesh.norm.data(), mesh.uv.data(),aPosData.size(), aIndicies.data(), aIndicies.size());
+    Nv::Blast::Mesh* aMesh = NvBlastExtAuthoringCreateMesh(pos.data(), norm.data(), uv.data(),aPosData.size(), aIndicies.data(), aIndicies.size());
     
     aMesh = cleaner->cleanMesh(aMesh);
     myFractureTool = NvBlastExtAuthoringCreateFractureTool();
@@ -170,36 +172,47 @@ bool BlastAsset::CreateAsset(const std::vector<CommonUtilities::Vector3f>& aPosD
 BlastMesh BlastAsset::GetRenderData()
 {
 	BlastMesh retVal;
-    for(uint32_t i = 0; i<myFractureTool->getChunkCount(); i++)
+    for(const auto& [index, actor ]: myBlastActors)
     {
-            //Mesh* donemesh = myFractureTool->createChunkMesh(i);
+	    uint32_t chunkCount = actor->getVisibleChunkCount();
+        uint32_t* indicies = new uint32_t[chunkCount];
+        actor->getVisibleChunkIndices(indicies,chunkCount);//Get chunks associated with actor
+		PxTransform transform = static_cast<PxRigidDynamic*>(actor->userData)->getGlobalPose();
+	    for(uint32_t i = 0; i<chunkCount; i++)
+	    {
+	            //Mesh* donemesh = myFractureTool->createChunkMesh(i);
 			Triangle* mesh;
-			uint32_t count = myFractureTool->getBaseMesh((int32_t)i, mesh);
+			uint32_t count = myFractureTool->getBaseMesh((int32_t)indicies[i], mesh);
 			for(uint32_t j = 0; j<count; j++)
 			{
-				retVal.pos.push_back(mesh[j].a.p);
-				retVal.norm.push_back(mesh[j].a.n);
-				retVal.uv.push_back(mesh[j].a.uv[0]);
-                retVal.indicies.push_back(retVal.indicies.size());
-				retVal.pos.push_back(mesh[j].b.p);
-				retVal.norm.push_back(mesh[j].b.n);
-				retVal.uv.push_back(mesh[j].b.uv[0]);
-                retVal.indicies.push_back(retVal.indicies.size());
-				retVal.pos.push_back(mesh[j].b.p);
-				retVal.norm.push_back(mesh[j].b.n);
-				retVal.uv.push_back(mesh[j].b.uv[0]);
-                retVal.indicies.push_back(retVal.indicies.size());
+                PxVec3 pos(mesh[j].a.p.x, mesh[j].a.p.y, mesh[j].a.p.z);
+                PxVec3 norm(mesh[j].a.n.x, mesh[j].a.n.y, mesh[j].a.n.z);
+                pos = transform.transform(pos);
+                norm = transform.transform(norm);
+                retVal.pos.emplace_back(ToVector3f(pos));
+				retVal.norm.emplace_back(ToVector3f(norm));
+                retVal.uv.emplace_back(mesh[j].a.uv[0].x, mesh[j].a.uv[0].y);
+				retVal.indicies.emplace_back(retVal.indicies.size());
 
+                pos = {mesh[j].b.p.x, mesh[j].b.p.y, mesh[j].b.p.z};
+                norm = {mesh[j].b.n.x, mesh[j].b.n.y, mesh[j].b.n.z};
+                pos = transform.transform(pos);
+                norm = transform.transform(norm);
+                retVal.pos.emplace_back(ToVector3f(pos));
+				retVal.norm.emplace_back(ToVector3f(norm));
+                retVal.uv.emplace_back(mesh[j].b.uv[0].x, mesh[j].b.uv[0].y);
+                retVal.indicies.emplace_back(retVal.indicies.size());
+
+                pos = {mesh[j].c.p.x, mesh[j].c.p.y, mesh[j].c.p.z};
+                norm = {mesh[j].c.n.x, mesh[j].c.n.y, mesh[j].c.n.z};
+                pos = transform.transform(pos);
+                norm = transform.transform(norm);
+                retVal.pos.emplace_back(ToVector3f(pos));
+				retVal.norm.emplace_back(ToVector3f(norm));
+                retVal.uv.emplace_back(mesh[j].c.uv[0].x, mesh[j].c.uv[0].y);
+                retVal.indicies.emplace_back(retVal.indicies.size());
 			}
-    		/*const Vertex* vertexArray = donemesh->getVertices();
-            for(uint32_t j = 0; j<donemesh->getVerticesCount(); j++)
-            {
-                
-	            retVal.pos.push_back(vertexArray[j].p);
-	            retVal.norm.push_back(vertexArray[j].p);
-	            retVal.uv.push_back(vertexArray[j].uv[0]);
-                retVal.indicies.push_back(retVal.indicies.size());
-            }*/
+	    }
     }
     return retVal;
 }

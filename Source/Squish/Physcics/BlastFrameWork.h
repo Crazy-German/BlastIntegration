@@ -3,6 +3,7 @@
 #include "NvAllocatorCallback.h"
 #include "NvCTypes.h"
 #include "PxJoint.h"
+#include "CommonUtilities/Color.h"
 #include "foundation/PxVec3.h"
 
 namespace Nv::Blast
@@ -72,6 +73,7 @@ public:
 	static physx::PxVec3 toPxVec3(const float* aVec3);
 	static physx::PxVec3 toPxVec3(const nvidia::NvVec3& aVec3);
 	static physx::PxVec3 toPxVec3(const NvcVec3& aVec3);
+	static CommonUtilities::Vector3<float> toVector3(const NvcVec3& aVec3);
 private:
 	BlastFrameWork();
 	VHACD::IVHACD* myDecompoeser;
